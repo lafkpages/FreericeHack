@@ -1,9 +1,8 @@
-//
-//      _   ___              ____  _              ____        __ 
-//     / | / (_)_______     / __ \(_)_______     / __ )____  / /_
-//    /  |/ / / ___/ _ \   / /_/ / / ___/ _ \   / __  / __ \/ __/
-//   / /|  / / /__/  __/  / _, _/ / /__/  __/  / /_/ / /_/ / /_  
-//  /_/ |_/_/\___/\___/  /_/ |_/_/\___/\___/  /_____/\____/\__/  
+//      _______              ____  _              ____        __ 
+//     / _____/ ___         / __ \(_)_______     / __ )____  / /_
+//    / /__   / __/        / /_/ / / ___/ _ \   / __  / __ \/ __/
+//   / ___/  / /          / _, _/ / /__/  __/  / /_/ / /_/ / /_  
+//  /_/     /_/          /_/ |_/_/\___/\___/  /_____/\____/\__/  
 //  
 //  Original by: Neil Master/Yeehawlerz101
 //  Remixed by: LuisAFK
@@ -11,6 +10,10 @@
 //  How to use: Make an account, sign in, then go to the multiplacation table category (freerice.com/categories/multiplication-table)
 //  Then when the page loads, go to the console of your web browser and paste this code in the console and enjoy!
 //  Press the space bar to complete the answer
+//  https://github.com/lafkpages/FreericeHack
+
+
+
 window.freeRiceHackFunc = function(e)
 { 
   if (e.which != 32)
