@@ -1,5 +1,12 @@
 import requests as r
 
+class Data:
+	def __init__(self):
+		self.game = ''
+		
+		self.question_id  = ''
+		self.question_txt = ''
+
 class Freerice:
   def __init__(self, user_id):
     self.user = user_id
@@ -7,6 +14,10 @@ class Freerice:
 
     self.new_game_url = 'https://engine.freerice.com/games'
     self.new_game_mth = 'POST'
+    
+    self.answer_url   = 'https://engine.freerice.com/games/'
+    self.answer_url2  = '/answer?lang=en'
+    self.answer_mth   = 'PATCH'
 
     self.categories = {
       'multiplication-table': '66f2a9aa-bac2-5919-997d-2d17825c1837'
@@ -27,9 +38,42 @@ class Freerice:
     req = r.request(self.new_game_mth, self.new_game_url, json=data, headers=headers)
 
     data = req.json()
-    game = data['data']['id']
+    
+    ret = Data()
+    ret.game = data['data']['id']
+    ret.question_id  = data['data']['attributes']['question_id']
+    ret.question_txt = data['data']['attributes']['question']['text']
+    
+    self.game = ret.game
 
-    print(data)
-    print(game)
+    return ret
+	
+	def submitAnswer(self, qId, A):
+		headers = {
+      'Content-type': 'application/json',
+      'Origin': 'https://freerice.com'
+    }
+    
+    data = {
+      'answer': 'a' + A,
+      'question': qId,
+      'user': self.user
+    }
+    
+    url = self.answer_url + self.game + self.answer_url2
+	
+   	req = r.request(self.answer_mth, url, json=data, headers=headers)
+   	
+   	data = req.json()
+    
+    ret = Data()
+    ret.question_id  = data['data']['attributes']['question_id']
+    ret.question_txt = data['data']['attributes']['question']['text']
 
-    return data
+    return ret
+   	
+   
+   
+   
+   
+   
