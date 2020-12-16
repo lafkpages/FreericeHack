@@ -3,6 +3,8 @@ import requests as r
 class Data:
 	def __init__(self):
 		self.game = ''
+
+		self.rice_total = 0
 		
 		self.question_id  = ''
 		self.question_txt = ''
@@ -40,16 +42,17 @@ class Freerice:
     data = req.json()
     
     ret = Data()
-    ret.game = data['data']['id']
+    ret.game         = data['data']['id']
     ret.question_id  = data['data']['attributes']['question_id']
     ret.question_txt = data['data']['attributes']['question']['text']
+    ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
     
     self.game = ret.game
 
     return ret
-	
-	def submitAnswer(self, qId, A):
-		headers = {
+  
+  def submitAnswer(self, qId, A):
+    headers = {
       'Content-type': 'application/json',
       'Origin': 'https://freerice.com'
     }
@@ -62,18 +65,14 @@ class Freerice:
     
     url = self.answer_url + self.game + self.answer_url2
 	
-   	req = r.request(self.answer_mth, url, json=data, headers=headers)
+    req = r.request(self.answer_mth, url, json=data, headers=headers)
    	
-   	data = req.json()
+    data = req.json()
     
     ret = Data()
+    ret.game         = data['data']['id']
     ret.question_id  = data['data']['attributes']['question_id']
     ret.question_txt = data['data']['attributes']['question']['text']
+    ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
 
     return ret
-   	
-   
-   
-   
-   
-   

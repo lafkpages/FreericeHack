@@ -1,13 +1,36 @@
 from Freerice import *
+from time import sleep
 
-freerice = Freerice('14cd5145-e13c-40fe-aad0-7a2bfb31b2f1') # Your user ID
 
-data = freerice.newGame()
+# CONFIG
+user = '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1'
+log  = False
+secs = 0.005
 
-print(data.game, data.question_id, data.question_txt)
+# Define the hack class with your user id
+# User ID can be found in LocalStorage > user > uuid
+freerice = Freerice(user) # Your user ID
 
-ans = eval(data.question_txt.replace('x', '*'))
+# Create a new game
+last = freerice.newGame()
 
-answ = freerice.submitAnswer(data.question_id, ans)
+print('Initial rice (total): ' + str(last.rice_total))
 
-print(answ.game, answ.question_id, answ.question_txt)
+try:
+  while True:
+    if log:
+      print('Game ID:          ' + last.game)
+      print('Total rice:       ' + str(last.rice_total))
+      print('Next question ID: ' + last.question_id)
+      print('Next question:    ' + last.question_txt)
+      print('\n')
+
+    ans = str(eval(last.question_txt.replace('x', '*')))
+
+    last = freerice.submitAnswer(last.question_id, ans)
+
+    sleep(secs)
+except KeyboardInterrupt:
+  print('User controlled C')
+  print('Final rice (total): ' + str(last.rice_total))
+  quit()
