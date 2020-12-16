@@ -70,9 +70,12 @@ class Freerice:
     data = req.json()
     
     ret = Data()
-    ret.game         = data['data']['id']
-    ret.question_id  = data['data']['attributes']['question_id']
-    ret.question_txt = data['data']['attributes']['question']['text']
-    ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
+    try:
+      #ret.game         = data['data']['id']
+      ret.question_id  = data['data']['attributes']['question_id']
+      ret.question_txt = data['data']['attributes']['question']['text']
+      ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
+    except KeyError:
+      pass
 
     return ret
