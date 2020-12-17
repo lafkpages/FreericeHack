@@ -10,7 +10,7 @@ A hack for https://freerice.com
    - Make sure their extensions are `.py` and not `.txt`
 1. Edit the `Requests.py` file at the _CONFIG_ section, near line _6_.
    - Change the variable `user` to your user ID
-     - See the section about [User ID](#User_ID)s
+     - See the section about [User ID](#User-ID)s
 1. In the terminal, go to your downloads folder
    - Windows: `cd C:\Users\YOU\Downloads`
    - Mac: `cd /Users/YOU/Downloads`
