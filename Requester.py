@@ -65,6 +65,7 @@ print('--------------|--------------|--------------|--------------')
 
 try:
   while True:
+    # Logs
     if log and not (last.rice_total == 0 or last.rice_total == ''):
       log_data = ['You', str(last.rice_total), last.streak, freerice.n_games]
       log_data_formatted = '|'.join(str(x).ljust(log_tcs) for x in log_data)
@@ -72,6 +73,7 @@ try:
       print(log_data_formatted, end='')
 
     if last.error or len(last.question_txt) < 2:
+      # If error is 'JSON decode error' => Freerice servers unavailable
       if last.error_id == 2:
         FSUV()
       else:
