@@ -1,13 +1,22 @@
 import requests as r
 
+'''
+  Error IDs | Description
+------------------------------------
+   1        | JSON decode error
+   2        | 'rice_total' KeyError
+'''
+
 class Data:
   def __init__(self):
     self.error      = False
+    self.error_id   = 0
     self.error_info = []
 
     self.game = ''
 
     self.rice_total = 0
+    self.streak     = 0
 		
     self.question_id  = ''
     self.question_txt = ''
@@ -16,6 +25,7 @@ class Freerice:
   def __init__(self, user_id):
     self.user       = user_id
     self.game       = ''
+    self.n_games    = 0
     self.init_level = 1
 
     self.new_game_url = 'https://engine.freerice.com/games'
@@ -49,6 +59,7 @@ class Freerice:
       data = req.json()
     except:
       ret.error = True
+      ret.error_id = 1
       ret.error_info = 'JSON decode error.'
 
       return ret
@@ -60,6 +71,8 @@ class Freerice:
     ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
     
     self.game = ret.game
+
+    self.n_games += 1
 
     return ret
   
@@ -103,8 +116,13 @@ class Freerice:
       pass#print(data)
 
     try:
-      ret.rice_total = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
+      ret.streak = data['data']['attributes']['streak']
+      try:
+        ret.rice_total = data['data']['attributes']['userattributes']['rice']
+      except:
+        ret.rice_total = data['data']['attributes']['user_rice_total']
     except KeyError:
+      ret.error_id = 2
       ret.rice_total = 0
 
     return ret
