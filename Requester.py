@@ -1,6 +1,8 @@
-from Freerice import Freerice
-from time import sleep
-import socket
+from Freerice import Freerice   
+from time import sleep          # To wait 
+import socket                   # To get your IP
+import threading                # To do multiple threads
+import sys, getopt              # For user params
 
 
 # CONFIG
@@ -10,6 +12,32 @@ log_tcs = 14                                       # log table column size
 secs    = False                                    # time to wait between question
 fsuv    = 6                                        # exit code for freerice servers unavailable
 usrc    = 0                                        # exit code for user control C
+threads = 2
+
+# User arguments (they override the previous CONFIG variables)
+if len(sys.argv) < 2:
+  print("No arguments passed.")
+else:
+  try: 
+    _opts, _args = getopt.getopt(sys.argv[1:], "t:hu:", "threads no-log help user=")   
+  except getopt.GetoptError: 
+    print(sys.argv[1:])
+    print("Argument parsing error.")
+    quit()
+
+  for opt, arg in _opts:
+    if opt in ['-h', '--help']:
+      print("Usage: \nRequester.py [-h --help] \nRequester.py [-u --user your_user_id] \n")
+      quit()
+    elif opt in ['-u', '--user']: 
+      user = arg
+    elif opt in ['--no-log']: 
+      log = False
+    elif opt in ['-t', '--threads']:
+      threads = int(arg)
+
+# Define the hack class with your user id
+freerice = Freerice(user) # Pass your user ID
 
 def get_local_ip():
   hostname = socket.gethostname()
@@ -51,44 +79,54 @@ def USRC():
   print('\r\n\nUser controlled C')
   quit(usrc)
 
-# Define the hack class with your user id
-freerice = Freerice(user) # Pass your user ID
+def MainHack(log=False):
+  try:
+    global freerice
 
-# Create a new game
-last = freerice.newGame()
+    # Create a new game
+    last = freerice.newGame()
 
-if last.error:
-  FSUV()
+    while True:
+      # Logs
+      if log and not (last.rice_total == 0 or last.rice_total == ''):
+        log_data = ['  You', '  ' + str(last.rice_total), '  ' + str(last.streak), '  ' + str(freerice.n_games)]
+        log_data_formatted = '|'.join(str(x).ljust(log_tcs) for x in log_data)
+
+        print(log_data_formatted, end='')
+
+      if last.error or len(last.question_txt) < 2:
+        # If error is 'JSON decode error' => Freerice servers unavailable
+        if last.error_id == 2:
+          FSUV()
+          break
+        else:
+          last = freerice.newGame()
+      
+      try:
+        ans = str(eval(last.question_txt.replace('x', '*')))
+
+        last = freerice.submitAnswer(last.question_id, ans)
+      except SyntaxError: # Syntax error in eval()
+        pass
+
+      if type(secs) == type(0):
+        sleep(secs)
+
+      print('\r', end='')
+  except KeyboardInterrupt:
+    USRC()
+
+print('Threads: ' + str(threads))
 
 print('    User      |  Total rice  |    Streak    |Games created ')
 print('--------------|--------------|--------------|--------------')
 
-try:
-  while True:
-    # Logs
-    if log and not (last.rice_total == 0 or last.rice_total == ''):
-      log_data = ['You', str(last.rice_total), last.streak, freerice.n_games]
-      log_data_formatted = '|'.join(str(x).ljust(log_tcs) for x in log_data)
-
-      print(log_data_formatted, end='')
-
-    if last.error or len(last.question_txt) < 2:
-      # If error is 'JSON decode error' => Freerice servers unavailable
-      if last.error_id == 2:
-        FSUV()
-      else:
-        last = freerice.newGame()
-    
-    try:
-      ans = str(eval(last.question_txt.replace('x', '*')))
-
-      last = freerice.submitAnswer(last.question_id, ans)
-    except SyntaxError: # Syntax error in eval()
-      pass
-
-    if type(secs) == type(0):
-      sleep(secs)
-
-    print('\r', end='')
-except KeyboardInterrupt:
-  USRC()
+_threads = []
+if threads > 1:
+  for i in range(threads - 1):
+    _threads.append(threading.Thread(target=MainHack, daemon=True))
+    _threads[i].start()
+  
+  MainHack(log)
+else:
+  MainHack(log)
