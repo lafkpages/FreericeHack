@@ -45,6 +45,7 @@ Press `F12` (or `FN + F12`).
 1. Open the console (see [Opening the console](#opening-the-console))
 1. Go to the `application` section
 1. Open the `Local storage` menu on the left, and select `https://freerice.com`
+![Screenshot](README_img1.png)
 1. Double-click on the `user` value, and you'll see a JSON like this:
 ```
 {
