@@ -8,7 +8,7 @@ A hack for https://freerice.com
    - If that doesn't work, try `python3 -m pip install requests` or `python -m pip install requests`
 1. Download [Freerice.py](Freerice.py) and [Requester.py](Requester.py)
    - Make sure their extensions are `.py` and not `.txt`
-1. Edit the `Requests.py` file at the _CONFIG_ section, near line _6_.
+1. Edit the `Requests.py` file at the _CONFIG_ section, near line _21_.
    - Change the variable `user` to your user ID
      - See the section about [User ID](#User-ID)s
 1. In the terminal, go to your downloads folder
