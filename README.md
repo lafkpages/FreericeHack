@@ -8,15 +8,12 @@ A hack for https://freerice.com
    - If that doesn't work, try `python3 -m pip install requests` or `python -m pip install requests`
 1. Download [Freerice.py](Freerice.py) and [Requester.py](Requester.py)
    - Make sure their extensions are `.py` and not `.txt`
-1. Edit the `Requests.py` file at the _CONFIG_ section, near line _21_.
-   - Change the variable `user` to your user ID
-     - See the section about [User ID](#User-ID)s
 1. In the terminal, go to your downloads folder
    - Windows: `cd C:\Users\YOU\Downloads`
    - Mac: `cd /Users/YOU/Downloads`
-1. Run `python3 Requests.py`
+1. Run `python3 Requests.py -u your_user_id` (see the [User ID](#user-id)s section)
    - If that doesn't work, try `python Requests.py`
-1. Watch your rice grow. No need to open the [Freerice](https://freerice.com) website, this will do everything automatically.
+1. Watch your amount of rice grow. No need to open the [Freerice website](https://freerice.com), this will do everything automatically.
 
 ### Auto bot (JavaScript)
 1. Go to the [multiplication table category](https://freerice.com/categories/multiplication-table) in Freerice.
