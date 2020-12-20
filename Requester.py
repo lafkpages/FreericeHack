@@ -1,25 +1,55 @@
-from Freerice import Freerice   
-from time import sleep          # To wait 
-import socket                   # To get your IP
-import threading                # To do multiple threads
-import sys, getopt              # For user params
+# Hacks
+from Freerice import Freerice  
+
+# Timing
+from time import sleep
+
+# IPs
+import socket
+
+# Threading
+import threading
+
+# User parameters
+import sys
+import getopt
 
 
-# CONFIG
+
+# ============= CONFIG =============
+# User
 user    = '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1'   # user ID (can be found in LocalStorage > user > uuid)
+
+# Logs
 log     = True                                     # logging to terminal enabled/disabled
-log_tcs = 14                                       # log table column size
+log_tcs = 14                                       # (log table) column size
+log_sbd = 3                                        # (log table) spaces before data
+
+# Timing
 secs    = False                                    # time to wait between question
+
+# Error codes
 fsuv    = 6                                        # exit code for freerice servers unavailable
 usrc    = 0                                        # exit code for user control C
-threads = 2
 
-# User arguments (they override the previous CONFIG variables)
+# Threads
+threads = 1                                        # number of threads to start
+max_th  = 4                                        # maximum number of threads
+daemon  = True                                     # daemon enabled/disabled
+
+# Tor
+use_tor    = False                                 # Tor enabled/disabled
+tor_layers = 3                                     # Tor layers
+# =========== END CONFIG ===========
+
+
+
+# User parameters (they override the previous CONFIG variables)
 if len(sys.argv) < 2:
   print("No arguments passed.")
 else:
   try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "t:hu:", "threads no-log help user=")   
+    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:", "use-tor threads no-log help user=")   
   except getopt.GetoptError: 
     print(sys.argv[1:])
     print("Argument parsing error.")
@@ -27,17 +57,35 @@ else:
 
   for opt, arg in _opts:
     if opt in ['-h', '--help']:
-      print("Usage: \nRequester.py [-h --help] \nRequester.py [-u --user your_user_id] \n")
+      print("Usage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
     elif opt in ['--no-log']: 
       log = False
     elif opt in ['-t', '--threads']:
-      threads = int(arg)
+      if arg == 'max':
+        threads = max_th
+      elif arg == 'min':
+        threads = 1
+      else:
+        v = int(arg)
+        
+        if v > max_th:
+          print('Maximum threads is ' + str(max_th))
+          threads = max_th
+        else:
+          threads = v
+    elif opt in ['-T', '--use-tor']:
+      use_tor = True
 
 # Define the hack class with your user id
 freerice = Freerice(user) # Pass your user ID
+
+freerice.tor        = use_tor
+freerice.tor_onions = tor_layers
+
+print('Using Tor: ' + ('yes' if use_tor else 'no') + ' with %s layers.' % tor_layers)
 
 def get_local_ip():
   hostname = socket.gethostname()
@@ -79,18 +127,34 @@ def USRC():
   print('\r\n\nUser controlled C')
   quit(usrc)
 
-def MainHack(log=False):
+def TC(log_=log):
+  if log_:
+    print('    User      |  Total rice  |    Streak    |Games created ')
+    print('--------------|--------------|--------------|--------------')
+
+def MainHack(log=False, i=0):
   try:
     global freerice
 
-    # Create a new game
-    last = freerice.newGame()
+    # Create a new game if none created
+    last = False
+    '''
+    if freerice.game in [[], {}, '', 0, None, False]:
+      last = freerice.newGame()
+    else:'''
+    last = freerice.last_ret_v
+
+    print('Thread %s game ID: %s' % (i + 1, last.game))
+
+    sleep(0.2)
+
+    TC(log)
 
     while True:
       # Logs
       if log and not (last.rice_total == 0 or last.rice_total == ''):
-        log_data = ['  You', '  ' + str(last.rice_total), '  ' + str(last.streak), '  ' + str(freerice.n_games)]
-        log_data_formatted = '|'.join(str(x).ljust(log_tcs) for x in log_data)
+        log_data = ['You', str(last.rice_total), str(last.streak), str(freerice.n_games)]
+        log_data_formatted = '|'.join(str((' ' * log_sbd) + x).ljust(log_tcs) for x in log_data)
 
         print(log_data_formatted, end='')
 
@@ -116,17 +180,21 @@ def MainHack(log=False):
   except KeyboardInterrupt:
     USRC()
 
-print('Threads: ' + str(threads))
+freerice.newGame()
 
-print('    User      |  Total rice  |    Streak    |Games created ')
-print('--------------|--------------|--------------|--------------')
-
-_threads = []
 if threads > 1:
-  for i in range(threads - 1):
-    _threads.append(threading.Thread(target=MainHack, daemon=True))
-    _threads[i].start()
-  
-  MainHack(log)
+  try:
+    for i in range(threads - 1):
+      (threading.Thread(target=MainHack, args=(False, i), daemon=daemon)).start()
+
+      #print('Threads started: ' + str(i + 1), end='\r')  
+
+      sleep(0.5)
+    
+    #print('\nStarting thread %s in main program.' % threads)
+    
+    MainHack(log, threads - 1)
+  except KeyboardInterrupt:
+    USRC()
 else:
   MainHack(log)

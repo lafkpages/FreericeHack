@@ -1,4 +1,7 @@
 import requests as r
+import torpy
+from torpy.http.requests import do_request as tor_request
+import json
 
 '''
   Error IDs | Description
@@ -28,30 +31,69 @@ class Freerice:
     self.n_games    = 0
     self.init_level = 1
 
-    self.new_game_url = 'https://engine.freerice.com/games'
-    self.new_game_mth = 'POST'
-    
-    self.answer_url   = 'https://engine.freerice.com/games/'
-    self.answer_url2  = '/answer?lang=en'
-    self.answer_mth   = 'PATCH'
+    self.default_headers = {
+      'Content-type': 'application/json',
+      'Origin'      : 'https://freerice.com',
+      'User-Agent'  : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+    }
+
+    # ============== URLS ==============
+    self.user_url       = 'https://accounts.freerice.com/users/'
+    self.user_url2      = '?_format=json'
+    self.user_mth       = 'GET'
+
+    self.new_game_url   = 'https://engine.freerice.com/games?lang=en'
+    self.new_game_mth   = 'POST'
+
+    self.answer_url     = '' # will be autocompleted by newGame()
+    self.answer_url2    = '/answer?lang=en'
+    self.answer_mth     = 'PATCH'
+
+    self.stats_url      = 'https://engine.freerice.com/gamestats/rice-totals'
+    self.stats_mth      = 'GET' # or 'OPTIONS'
+
+    self.ads_url        = 'https://accounts.freerice.com/api/ads'
+    self.ads_mth        = 'GET' # or 'OPTIONS'
+
+    self.favicon_url    = 'https://freerice.com/favicon.ico'
+    self.favicon_mth    = 'GET'
+
+    self.eyecatcher_url = 'https://accounts.freerice.com/api/eye-catcher?_lang=en'
+    self.eyecatcher_mth = 'OPTIONS'
+
+    self.badges_url     = 'https://engine.freerice.com/badges/?limit=50&lang=en'
+    self.badges_mth     = 'GET'
+
+    self.announce_url   = 'https://accounts.freerice.com/api/announcements?lang=en'
+    self.announce_mth   = 'GET'
+
+    self.levels_url     = 'https://engine.freerice.com/levels?lang=en'
+    self.levels_mth     = 'GET' # or 'OPTIONS'
+
+    self.manifest_url   = 'https://freerice.com/manifest.json'
+    self.manifest_mth   = 'GET'
+    # ============ END URLS ============
+
+
+
+    self.tor        = False
+    self.tor_client = torpy.TorClient() # TorPy client
+    self.tor_onions = 3                 # number of Tor layers
+
+    self.last_ret_v = None
 
     self.categories = {
       'multiplication-table': '66f2a9aa-bac2-5919-997d-2d17825c1837'
     }
 
   def newGame(self):
-    headers = {
-      'Content-type': 'application/json',
-      'Origin': 'https://freerice.com'
-    }
-
     data = {
       'category': self.categories['multiplication-table'],
       'level': self.init_level,
       'user': self.user
     }
 
-    req = r.request(self.new_game_mth, self.new_game_url, json=data, headers=headers)
+    req = r.request(self.new_game_mth, self.new_game_url, json=data, headers=self.default_headers)
 
     ret = Data()
 
@@ -62,9 +104,12 @@ class Freerice:
       ret.error_id = 1
       ret.error_info = 'JSON decode error.'
 
+      self.last_ret_v = ret
+
       return ret
     
-    
+    self.answer_url = data['data']['links']['self']
+
     ret.game         = data['data']['id']
     ret.question_id  = data['data']['attributes']['question_id']
     ret.question_txt = data['data']['attributes']['question']['text']
@@ -74,31 +119,47 @@ class Freerice:
 
     self.n_games += 1
 
+    self.last_ret_v = ret
+
     return ret
   
   def submitAnswer(self, qId, A):
-    headers = {
-      'Content-type': 'application/json',
-      'Origin': 'https://freerice.com'
-    }
-    
     data = {
       'answer': 'a' + A,
       'question': qId,
       'user': self.user
     }
     
-    url = self.answer_url + self.game + self.answer_url2
+    url = self.answer_url + self.answer_url2
 	
-    req = r.request(self.answer_mth, url, json=data, headers=headers)
+    req = False
+
+    if self.tor:
+      try:
+        while True:
+          try:
+            req = tor_request(url, headers=self.default_headers, data=data, method=self.answer_mth, hops=self.tor_onions)
+
+            break
+          except:
+            pass
+      except KeyboardInterrupt:
+        print('User controlled C during Tor request.')
+
+      print(req)
+    else:
+      req = r.request(self.answer_mth, url, json=data, headers=self.default_headers)
 
     ret = Data()
 
     try:
-      data = req.json()
+      data = json.loads(req) #req.json()
     except:
       ret.error = True
+      ret.error_id = 1
       ret.error_info = 'JSON decode error.'
+
+      self.last_ret_v = ret
 
       return ret
 
@@ -106,10 +167,12 @@ class Freerice:
       ret.error      = True
       ret.error_info = data['errors']
 
+      self.last_ret_v = ret
+
       return ret
     
     try:
-      #ret.game         = data['data']['id']
+      ret.game         = data['data']['id']
       ret.question_id  = data['data']['attributes']['question_id']
       ret.question_txt = data['data']['attributes']['question']['text']
     except:
@@ -120,9 +183,14 @@ class Freerice:
       try:
         ret.rice_total = data['data']['attributes']['userattributes']['rice']
       except:
-        ret.rice_total = data['data']['attributes']['user_rice_total']
+        try:
+          ret.rice_total = data['data']['attributes']['user_rice_total']
+        except KeyError:
+          ret.error_id = 2
+          ret.rice_total = 0
     except KeyError:
-      ret.error_id = 2
-      ret.rice_total = 0
+      ret.error = True
+
+    self.last_ret_v = ret
 
     return ret
