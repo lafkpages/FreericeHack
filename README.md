@@ -35,9 +35,9 @@ A hack for https://freerice.com
 #### Chrome
 
 Press `Cmd + Alt + J`.
-### Windows
+### Windows/Linux
 
-Press `F12` (or `FN + F12`).
+Press `F12` (or `FN + F12` on some keyboards).
 
 ## User ID
 ### Chrome
