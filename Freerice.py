@@ -145,10 +145,10 @@ class Freerice:
             req = tor_request(url, headers=self.default_headers, data=data, method=self.answer_mth, hops=self.tor_onions)
             break
           except KeyboardInterrupt:
-            logging.critical("User controlled C during Tor request.")
+            logging.critical("\rUser controlled C during Tor request.")
             break
       except KeyboardInterrupt:
-        logging.critical('User controlled C during Tor request.')
+        logging.critical('\rUser controlled C during Tor request.')
     else:
       req = r.request(self.answer_mth, url, json=data, headers=self.default_headers)
 

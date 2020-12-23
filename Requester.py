@@ -63,7 +63,7 @@ else:
 
   for opt, arg in _opts:
     if opt in ['-h', '--help']:
-      logging.critical("\rUsage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
+      logging.critical("\rhttps://github.com/lafkpages/FreericeHack/blob/main/README.md\nUsage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
