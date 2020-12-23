@@ -2,6 +2,7 @@ import requests as r
 import torpy
 from torpy.http.requests import do_request as tor_request
 import json
+import logging
 
 '''
   Error IDs | Description
@@ -9,6 +10,8 @@ import json
    1        | JSON decode error
    2        | 'rice_total' KeyError
 '''
+
+logging.basicConfig(level=logging.CRITICAL)
 
 class Data:
   def __init__(self):
@@ -135,25 +138,28 @@ class Freerice:
     req = False
 
     if self.tor:
+      data = json.dumps(data)
       try:
         while True:
           try:
             req = tor_request(url, headers=self.default_headers, data=data, method=self.answer_mth, hops=self.tor_onions)
-
             break
-          except:
-            pass
+          except KeyboardInterrupt:
+            logging.critical("User controlled C during Tor request.")
+            break
       except KeyboardInterrupt:
-        print('User controlled C during Tor request.')
-
-      print(req)
+        logging.critical('User controlled C during Tor request.')
     else:
       req = r.request(self.answer_mth, url, json=data, headers=self.default_headers)
 
     ret = Data()
 
     try:
-      data = json.loads(req) #req.json()
+      if not self.tor:
+        data = req.json()
+      else:
+        # Tor's request returns a string (.text), not a request object
+        data = json.loads(req)
     except:
       ret.error = True
       ret.error_id = 1

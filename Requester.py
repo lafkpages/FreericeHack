@@ -7,12 +7,15 @@ from time import sleep
 # IPs
 import socket
 
-# Threading
-import threading
+# Multiprocessing
+#import multiprocessing
 
 # User parameters
 import sys
 import getopt
+
+# Logs
+import logging
 
 
 
@@ -31,6 +34,7 @@ secs    = False                                    # time to wait between questi
 # Error codes
 fsuv    = 6                                        # exit code for freerice servers unavailable
 usrc    = 0                                        # exit code for user control C
+tnay    = 4                                        # exit code for threads not available
 
 # Threads
 threads = 1                                        # number of threads to start
@@ -44,40 +48,51 @@ tor_layers = 3                                     # Tor layers
 
 
 
+logging.basicConfig(level=logging.CRITICAL)
+
 # User parameters (they override the previous CONFIG variables)
 if len(sys.argv) < 2:
-  print("No arguments passed.")
+  logging.critical("\rNo arguments passed.")
 else:
   try: 
     _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:", "use-tor threads no-log help user=")   
   except getopt.GetoptError: 
-    print(sys.argv[1:])
-    print("Argument parsing error.")
+    logging.debug(sys.argv[1:])
+    logging.critical("\rArgument parsing error.")
     quit()
 
   for opt, arg in _opts:
     if opt in ['-h', '--help']:
-      print("Usage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
+      logging.critical("\rUsage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
     elif opt in ['--no-log']: 
       log = False
     elif opt in ['-t', '--threads']:
-      if arg == 'max':
-        threads = max_th
-      elif arg == 'min':
-        threads = 1
+      if True:
+        logging.critical('\rThreads are not available yet.')
+        quit(tnay)
       else:
-        v = int(arg)
-        
-        if v > max_th:
-          print('Maximum threads is ' + str(max_th))
+        if arg == 'max':
           threads = max_th
+        elif arg == 'min':
+          threads = 1
         else:
-          threads = v
+          v = int(arg)
+          
+          if v > max_th:
+            logging.critical('Maximum threads is ' + str(max_th))
+            threads = max_th
+          else:
+            threads = v
     elif opt in ['-T', '--use-tor']:
-      use_tor = True
+      print('\rUsing Tor will make the hack run VERY slow, but will prevent the Freerice servers from blocking it.\nDefault is %s.\nAre you shure you want to use Tor? (y/n) ' % ('yes' if use_tor else 'no'), end='')
+      confirm = input()
+      if confirm.lower() in ['y', 'yes', 'yeah', 'yup', 'si', 'sure', 'ok', 'okey', 'oki']:
+        use_tor = True
+      else:
+        use_tor = False
 
 # Define the hack class with your user id
 freerice = Freerice(user) # Pass your user ID
@@ -85,7 +100,7 @@ freerice = Freerice(user) # Pass your user ID
 freerice.tor        = use_tor
 freerice.tor_onions = tor_layers
 
-print('Using Tor: ' + ('yes' if use_tor else 'no') + ' with %s layers.' % tor_layers)
+logging.critical('\rUsing Tor: ' + ('yes' if use_tor else 'no') + ' with %s layers.\n' % tor_layers)
 
 def get_local_ip():
   hostname = socket.gethostname()
@@ -111,26 +126,26 @@ def get_network_ip():
 def FSUV():
   global fsuv
 
-  print('Freerice servers are unavailable. Try changing your IP (via VPN)')
-  print('Your current IPs:')
+  logging.critical('\rFreerice servers are unavailable (HTTP error 429).\nTry changing your IP (via VPN) or enabling Tor (--use-tor or -T).')
+  logging.critical('\rYour current IPs:')
 
   ips = [get_local_ip(), get_external_ip(), get_network_ip()]
   for ip in ips:
     sleep(0.1)
-    print('  - ' + ip)
+    logging.critical('\r  - ' + ip)
   
   quit(fsuv)
 
 def USRC():
   global usrc
 
-  print('\r\n\nUser controlled C')
+  logging.critical('\r\n\nUser controlled C')
   quit(usrc)
 
 def TC(log_=log):
   if log_:
-    print('    User      |  Total rice  |    Streak    |Games created ')
-    print('--------------|--------------|--------------|--------------')
+    logging.critical('\r    User      |  Total rice  |    Streak    |Games created ')
+    logging.critical('\r--------------|--------------|--------------|--------------')
 
 def MainHack(log=False, i=0):
   try:
@@ -144,7 +159,7 @@ def MainHack(log=False, i=0):
     else:'''
     last = freerice.last_ret_v
 
-    print('Thread %s game ID: %s' % (i + 1, last.game))
+    logging.critical('\rThread %s game ID: %s\n' % (i + 1, last.game))
 
     sleep(0.2)
 
@@ -156,7 +171,7 @@ def MainHack(log=False, i=0):
         log_data = ['You', str(last.rice_total), str(last.streak), str(freerice.n_games)]
         log_data_formatted = '|'.join(str((' ' * log_sbd) + x).ljust(log_tcs) for x in log_data)
 
-        print(log_data_formatted, end='')
+        print('\r' + log_data_formatted, end='')
 
       if last.error or len(last.question_txt) < 2:
         # If error is 'JSON decode error' => Freerice servers unavailable
@@ -168,7 +183,7 @@ def MainHack(log=False, i=0):
       
       try:
         ans = str(eval(last.question_txt.replace('x', '*')))
-
+        
         last = freerice.submitAnswer(last.question_id, ans)
       except SyntaxError: # Syntax error in eval()
         pass
@@ -185,13 +200,13 @@ freerice.newGame()
 if threads > 1:
   try:
     for i in range(threads - 1):
-      (threading.Thread(target=MainHack, args=(False, i), daemon=daemon)).start()
+      #START THREAD
 
-      #print('Threads started: ' + str(i + 1), end='\r')  
+      #logging.critical('Threads started: ' + str(i + 1), end='\r')  
 
       sleep(0.5)
     
-    #print('\nStarting thread %s in main program.' % threads)
+    #logging.critical('\nStarting thread %s in main program.' % threads)
     
     MainHack(log, threads - 1)
   except KeyboardInterrupt:
