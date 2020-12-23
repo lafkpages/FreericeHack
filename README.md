@@ -3,9 +3,9 @@ A hack for https://freerice.com
 
 ## Usage
 ### PyRice (Python3)
-1. Install [Python3](https://python.org)
-1. Open a terminal and run `pip3 install requests`
-   - If that doesn't work, try `python3 -m pip install requests` or `python -m pip install requests`
+1. Install [Python3](https://python.org) (if not already installed)
+1. Open a terminal and run `pip3 install requests torpy`
+   - If that doesn't work, try `python3 -m pip install requests torpy` or `python -m pip install requests torpy`
 1. Download [Freerice.py](Freerice.py) and [Requester.py](Requester.py)
    - Make sure their extensions are `.py` (and not `.txt` or without an extension)
 1. In the terminal, go to your downloads folder
