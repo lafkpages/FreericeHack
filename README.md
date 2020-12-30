@@ -47,10 +47,10 @@ Press `F12` (or `FN + F12` on some keyboards).
 1. Open the `Local storage` menu on the left, and select `https://freerice.com`
 ![Screenshot](README_img1.png)
 1. Double-click on the `user` value, and you'll see a JSON like this:
-```
-{
-  "token": "...",
-  "uuid": "..."
-}
-```
+   ```
+   {
+     "token": "...",
+     "uuid": "..."
+   }
+   ```
 1. Copy the value in `uuid`
