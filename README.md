@@ -1,5 +1,5 @@
 # FreericeHack
-A hack for https://freerice.com
+A hack for https://freerice.com (useful if you want to beat BTS ARMY)
 
 ## Usage
 ### PyRice (Python3)
