@@ -1,6 +1,9 @@
 import requests as r
-import torpy
-from torpy.http.requests import do_request as tor_request
+try:
+  import torpy
+  from torpy.http.requests import do_request as tor_request
+except ImportError:
+  print('The TorPy library could not be found. \nPlease install it to use Tor with \'pip3 install torpy\' or \'python3 -m pip install torpy\'.')
 import json
 import logging
 
@@ -29,10 +32,10 @@ class Data:
 
 class Freerice:
   def __init__(self, user_id):
-    self.user       = user_id
-    self.game       = ''
-    self.n_games    = 0
-    self.init_level = 1
+    self.user       = user_id # user ID
+    self.game       = ''      # game ID
+    self.n_games    = 0       # number of games created
+    self.init_level = 1       # level to start at
 
     self.default_headers = {
       'Content-type': 'application/json',
@@ -116,7 +119,10 @@ class Freerice:
     ret.game         = data['data']['id']
     ret.question_id  = data['data']['attributes']['question_id']
     ret.question_txt = data['data']['attributes']['question']['text']
-    ret.rice_total   = data['data']['attributes']['userattributes']['rice'] #data['data']['attributes']['user_rice_total']
+    try:
+      ret.rice_total = data['data']['attributes']['userattributes']['rice']
+    except KeyError: 
+      ret.rice_total = data['data']['attributes']['user_rice_total']
     
     self.game = ret.game
 
@@ -188,7 +194,7 @@ class Freerice:
       ret.streak = data['data']['attributes']['streak']
       try:
         ret.rice_total = data['data']['attributes']['userattributes']['rice']
-      except:
+      except KeyError:
         try:
           ret.rice_total = data['data']['attributes']['user_rice_total']
         except KeyError:

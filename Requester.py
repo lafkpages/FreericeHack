@@ -89,7 +89,7 @@ else:
     elif opt in ['-T', '--use-tor']:
       print('\rUsing Tor will make the hack run VERY slow, but will prevent the Freerice servers from blocking it.\nDefault is %s.\nAre you shure you want to use Tor? (y/n) ' % ('yes' if use_tor else 'no'), end='')
       confirm = input()
-      if confirm.lower() in ['y', 'yes', 'yeah', 'yup', 'si', 'sure', 'ok', 'okey', 'oki']:
+      if 'y' in confirm.lower():
         use_tor = True
       else:
         use_tor = False
@@ -139,7 +139,7 @@ def FSUV():
 def USRC():
   global usrc
 
-  logging.critical('\r\n\nUser controlled C')
+  logging.critical('\r%s\r\n\nUser controlled C' % (' ' * 25))
   quit(usrc)
 
 def TC(log_=log):
@@ -175,7 +175,7 @@ def MainHack(log=False, i=0):
 
       if last.error or len(last.question_txt) < 2:
         # If error is 'JSON decode error' => Freerice servers unavailable
-        if last.error_id == 2:
+        if last.error_id == 1:
           FSUV()
           break
         else:
