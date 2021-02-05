@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Freerice hacks",
+  "description": "Get tons of grains of rice for https://freerice.com.",
+  "version": "1",
+  "author": "LuisAFK",
+  "icons": {
+    "48": "favicon48.png",
+    "128": "favicon128.png",
+    "256": "favicon256.png"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "http://freerice.com/*",
+    "https://freerice.com/*",
+    "http://*.freerice.com/*",
+    "https://*.freerice.com/*"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "favicon48.png",
+    "default_title": "El Pais Article Hack"
+  }
+}
