@@ -55,7 +55,7 @@ if len(sys.argv) < 2:
   logging.critical("\rNo arguments passed.")
 else:
   try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:", "use-tor threads no-log help user=")   
+    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:", ["use-tor", "threads", "no-log", "help", "user=", 'interval='])   
   except getopt.GetoptError: 
     logging.debug(sys.argv[1:])
     logging.critical("\rArgument parsing error.")
@@ -93,6 +93,10 @@ else:
         use_tor = True
       else:
         use_tor = False
+    elif opt in ('-i', '--interval'):
+      secs = int(float(arg))
+
+      print('Interval:', secs)
 
 # Define the hack class with your user id
 freerice = Freerice(user) # Pass your user ID
@@ -145,7 +149,7 @@ def USRC():
 def TC(log_=log):
   if log_:
     logging.critical('\r    User      |  Total rice  |    Streak    |Games created ')
-    logging.critical('\r--------------|--------------|--------------|--------------')
+    logging.critical('\r--------------+--------------+--------------+--------------')
 
 def MainHack(log=False, i=0):
   try:
@@ -179,7 +183,10 @@ def MainHack(log=False, i=0):
           FSUV()
           break
         else:
-          last = freerice.newGame()
+          try:
+            last = freerice.newGame()
+          except:
+            FSUV()
       
       try:
         ans = str(eval(last.question_txt.replace('x', '*')))
