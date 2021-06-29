@@ -15,6 +15,10 @@ A hack for https://freerice.com (useful if you want to beat BTS ARMY)
    - If that doesn't work, try `python Requests.py -u your_user_id`
 1. Watch your amount of rice grow. But remember to open the [Freerice website](https://freerice.com) so they have some kind of income.
 
+**Note:** if you get blocked very quickly, try running it with an interval of 3 seconds: `python3 Requests.py -i 3`
+<br>
+You can change it if you want to whatever amount of seconds to wait between question.
+
 ### Auto bot (JavaScript)
 1. Go to the [multiplication table category](https://freerice.com/categories/multiplication-table) in Freerice.
 1. Open your browser's console (see [Opening the console](#opening-the-console)).
