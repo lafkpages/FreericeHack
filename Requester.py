@@ -131,13 +131,18 @@ def FSUV():
   global fsuv
 
   logging.critical('\rFreerice servers are unavailable (HTTP error 429).\nTry changing your IP (via VPN) or enabling Tor (--use-tor or -T).')
-  logging.critical('\rYour current IPs:')
-
-  ips = [get_local_ip(), get_external_ip(), get_network_ip()]
-  for ip in ips:
-    sleep(0.1)
-    logging.critical('\r  - ' + ip)
   
+  try:
+    ips = [get_local_ip(), get_external_ip(), get_network_ip()]
+  except:
+    pass
+  else:
+    logging.critical('\rYour current IPs:')
+    
+    for ip in ips:
+      sleep(0.1)
+      logging.critical('\r  - ' + ip)
+    
   quit(fsuv)
 
 def USRC():
