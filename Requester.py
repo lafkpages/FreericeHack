@@ -1,5 +1,5 @@
 # Hacks
-from Freerice import Freerice  
+from Freerice import Freerice, ConnectTimeout, FetchDescriptorError
 
 # Timing
 from time import sleep
@@ -33,6 +33,7 @@ secs    = False                                    # time to wait between questi
 
 # Error codes
 fsuv    = 6                                        # exit code for freerice servers unavailable
+trer    = 7
 usrc    = 0                                        # exit code for user control C
 tnay    = 4                                        # exit code for threads not available
 
@@ -87,7 +88,7 @@ else:
           else:
             threads = v
     elif opt in ['-T', '--use-tor']:
-      print('\rUsing Tor will make the hack run VERY slow, but will prevent the Freerice servers from blocking it.\nDefault is %s.\nAre you shure you want to use Tor? (y/n) ' % ('yes' if use_tor else 'no'), end='')
+      print('\rUsing Tor will make the hack run VERY slow and sometimes crash, but will prevent the Freerice servers from blocking it.\nDefault is %s.\nAre you shure you want to use Tor? (y/n) ' % ('yes' if use_tor else 'no'), end='')
       confirm = input()
       if 'y' in confirm.lower():
         use_tor = True
@@ -145,6 +146,12 @@ def FSUV():
     
   quit(fsuv)
 
+def TRER():
+  global trer
+
+  logging.critical('\rThere was a Tor error. Try disabling Tor.')
+  quit(trer)
+
 def USRC():
   global usrc
 
@@ -199,15 +206,29 @@ def MainHack(log=False, i=0):
         last = freerice.submitAnswer(last.question_id, ans)
       except SyntaxError: # Syntax error in eval()
         pass
+      except ConnectTimeout as e:
+        if 'torpy' in e.args:
+          # TorPy error
+          TRER()
+        else:
+          pass
+      except FetchDescriptorError:
+        TRER()
 
-      if type(secs) == type(0):
+      if type(secs) in {type(0), type(0.1)}:
         sleep(secs)
 
       print('\r', end='')
   except KeyboardInterrupt:
     USRC()
 
-freerice.newGame()
+try:
+  freerice.newGame()
+except:
+  FSUV()
+else:
+  if freerice.last_ret_v.error:
+    FSUV()
 
 if threads > 1:
   try:

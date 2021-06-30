@@ -1,7 +1,9 @@
 import requests as r
+from requests.exceptions import ConnectTimeout
 try:
   import torpy
   from torpy.http.requests import do_request as tor_request
+  from torpy.documents.network_status import FetchDescriptorError
 except ImportError:
   print('The TorPy library could not be found. \nPlease install it to use Tor with \'pip3 install torpy\' or \'python3 -m pip install torpy\'.')
 import json
@@ -40,7 +42,8 @@ class Freerice:
     self.default_headers = {
       'Content-type': 'application/json',
       'Origin'      : 'https://freerice.com',
-      'User-Agent'  : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+      'User-Agent'  : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+      'Accept'      : 'application/vnd.api+json;version=2'
     }
 
     # ============== URLS ==============
@@ -83,7 +86,10 @@ class Freerice:
 
 
     self.tor        = False
-    self.tor_client = torpy.TorClient() # TorPy client
+    try:
+      self.tor_client = torpy.TorClient()
+    except NameError:
+      self.tor_client = None
     self.tor_onions = 3                 # number of Tor layers
 
     self.last_ret_v = None
@@ -109,6 +115,14 @@ class Freerice:
       ret.error = True
       ret.error_id = 1
       ret.error_info = 'JSON decode error.'
+
+      self.last_ret_v = ret
+
+      return ret
+
+    if 'errors' in data:
+      ret.error      = True
+      ret.error_info = data['errors']
 
       self.last_ret_v = ret
 
