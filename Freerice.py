@@ -26,6 +26,12 @@ class Data:
 
     self.game = ''
 
+    self.name = ''
+    self.rank = ''
+    self.avtr = ''
+    
+    self.members = []
+
     self.rice_total = 0
     self.streak     = 0
 		
@@ -47,10 +53,6 @@ class Freerice:
     }
 
     # ============== URLS ==============
-    self.user_url       = 'https://accounts.freerice.com/users/'
-    self.user_url2      = '?_format=json'
-    self.user_mth       = 'GET'
-
     self.new_game_url   = 'https://engine.freerice.com/games?lang=en'
     self.new_game_mth   = 'POST'
 
@@ -81,6 +83,28 @@ class Freerice:
 
     self.manifest_url   = 'https://freerice.com/manifest.json'
     self.manifest_mth   = 'GET'
+
+    self.user_url       = 'https://engine.freerice.com/users/'
+    self.user_mth       = 'GET'
+
+    self.group_url      = 'https://engine.freerice.com/groups/'
+    self.group_mth      = 'GET'
+
+    self.ldbd_usrs_url  = 'https://engine.freerice.com/users?current=' # page number
+    self.ldbd_usrs_url2 = '&limit=50&_format=json'
+    self.ldbd_usrs_mthd = 'GET'
+
+    self.ldbd_grps_url  = 'https://engine.freerice.com/groups?current=' # page number
+    self.ldbd_grps_url2 = '&limit=50&_format=json'
+    self.ldbd_grps_mthd = 'GET'
+
+    self.prfl_usrs_url  = 'https://accounts.freerice.com/public/users?uuids=' # comma-sepparated user IDs
+    self.prfl_usrs_url2 = '&_format=json'
+    self.prfl_usrs_mthd = 'GET'
+
+    self.prfl_grps_url  = 'https://accounts.freerice.com/public/groups?uuids=' # comma-sepparated user IDs
+    self.prfl_grps_url2 = '&_format=json'
+    self.prfl_grps_mthd = 'GET'
     # ============ END URLS ============
 
 
@@ -220,3 +244,78 @@ class Freerice:
     self.last_ret_v = ret
 
     return ret
+  
+  def getUserStats(self, user=None, group=False):
+    if user is None:
+      user = self.user
+
+    URL = ''
+    if group:
+      URL = self.group_url + user
+    else:
+      URL = self.user_url + user
+
+    req = r.request(self.group_mth if group else self.user_mth, URL)
+
+    data = Data()
+    json = {}
+
+    try:
+      json = req.json()
+    except:
+      data.error = True
+
+      self.last_ret_v = data
+
+      return data
+
+    data.rice_total = json['data']['attributes']['rice']
+    data.rank       = json['data']['attributes']['rank']
+    if group:
+      data.members = json['data']['attributes']['members']
+    
+    return data
+  
+  def getUserProfile(self, user=None, group=False):
+    if user is None:
+      user = self.user
+
+    URL = ''
+    if group:
+      URL = self.prfl_grps_url + user + self.prfl_grps_url2
+    else:
+      URL = self.prfl_usrs_url + user + self.prfl_usrs_url2
+
+    req  = r.request(self.prfl_grps_mthd if group else self.prfl_usrs_mthd, URL)
+    json = {}
+    data = Data()
+    
+    '''
+    {
+      "...user-id...":{
+        "uuid": "...user-id...",
+        "name": "...user-name...",
+        "avatar": "avatar-..."
+      }
+    }
+    '''
+
+    try:
+      json = req.json()
+    except:
+      data.error = True
+
+      self.last_ret_v = data
+
+      return data
+
+    fk = user
+    
+    try:
+      data.name = json[fk]['name']
+    except KeyError:
+      fk = self.user + self.prfl_usrs_url2
+      data.name = json[fk]['name']
+    data.avtr = json[fk]['avatar']
+
+    return data

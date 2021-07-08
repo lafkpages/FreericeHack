@@ -1,5 +1,9 @@
 # Hacks
-from Freerice import Freerice, ConnectTimeout, FetchDescriptorError
+from Freerice import Freerice, ConnectTimeout
+try:
+  from Freerice import FetchDescriptorError
+except:
+  pass
 
 # Timing
 from time import sleep
@@ -22,6 +26,8 @@ import logging
 # ============= CONFIG =============
 # User
 user    = '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1'   # user ID (can be found in LocalStorage > user > uuid)
+monitor = False
+mntr_gp = False
 
 # Logs
 log     = True                                     # logging to terminal enabled/disabled
@@ -56,7 +62,7 @@ if len(sys.argv) < 2:
   logging.critical("\rNo arguments passed.")
 else:
   try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:", ["use-tor", "threads", "no-log", "help", "user=", 'interval='])   
+    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:mM", ["use-tor", "threads", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group'])   
   except getopt.GetoptError: 
     logging.debug(sys.argv[1:])
     logging.critical("\rArgument parsing error.")
@@ -98,6 +104,13 @@ else:
       secs = int(float(arg))
 
       print('Interval:', secs)
+    elif opt in {'-m', '-M', '--monitor', '--monitor-group'}:
+      mntr_gp = not opt in {'-m', '--monitor'}
+      msg     = 'group' if mntr_gp else 'user'
+
+      print('Monitor mode: on, for', msg)
+      print('This will log', msg, 'rice, but will not increment it.')
+      monitor = True
 
 # Define the hack class with your user id
 freerice = Freerice(user) # Pass your user ID
@@ -131,7 +144,7 @@ def get_network_ip():
 def FSUV():
   global fsuv
 
-  logging.critical('\rFreerice servers are unavailable (HTTP error 429).\nTry changing your IP (via VPN) or enabling Tor (--use-tor or -T).')
+  logging.critical('\rFreerice servers are unavailable.\nTry changing your IP (via VPN) or enabling Tor (--use-tor or -T).')
   
   try:
     ips = [get_local_ip(), get_external_ip(), get_network_ip()]
@@ -160,15 +173,26 @@ def USRC():
 
 def TC(log_=log):
   if log_:
-    logging.critical('\r    User      |  Total rice  |    Streak    |Games created ')
-    logging.critical('\r--------------+--------------+--------------+--------------')
+    logging.critical('\r    User      |  Total rice  |    Streak    |     Rank     |Games created ')
+    logging.critical('\r--------------+--------------+--------------+--------------+--------------')
+
+def LogFormatted(*log_data):
+  global log_sbd, log_tcs
+
+  print('\r' + '|'.join(str((' ' * log_sbd) + x).ljust(log_tcs) for x in log_data), end='')
+
+def doSleep():
+  global secs
+
+  if not secs == False:
+    sleep(secs)
 
 def MainHack(log=False, i=0):
   try:
     global freerice
 
     # Create a new game if none created
-    last = False
+    #last = False
     '''
     if freerice.game in [[], {}, '', 0, None, False]:
       last = freerice.newGame()
@@ -184,10 +208,7 @@ def MainHack(log=False, i=0):
     while True:
       # Logs
       if log and not (last.rice_total == 0 or last.rice_total == ''):
-        log_data = ['You', str(last.rice_total), str(last.streak), str(freerice.n_games)]
-        log_data_formatted = '|'.join(str((' ' * log_sbd) + x).ljust(log_tcs) for x in log_data)
-
-        print('\r' + log_data_formatted, end='')
+        LogFormatted('You', str(last.rice_total), str(last.streak), '', str(freerice.n_games))
 
       if last.error or len(last.question_txt) < 2:
         # If error is 'JSON decode error' => Freerice servers unavailable
@@ -215,8 +236,7 @@ def MainHack(log=False, i=0):
       except FetchDescriptorError:
         TRER()
 
-      if type(secs) in {type(0), type(0.1)}:
-        sleep(secs)
+      doSleep()
 
       print('\r', end='')
   except KeyboardInterrupt:
@@ -230,19 +250,36 @@ else:
   if freerice.last_ret_v.error:
     FSUV()
 
-if threads > 1:
+if monitor:
   try:
-    for i in range(threads - 1):
-      #START THREAD
+    print('Monitoring ID:', user, '\n')
 
-      #logging.critical('Threads started: ' + str(i + 1), end='\r')  
+    TC()
 
-      sleep(0.5)
-    
-    #logging.critical('\nStarting thread %s in main program.' % threads)
-    
-    MainHack(log, threads - 1)
+    profile = freerice.getUserProfile(group=mntr_gp)
+
+    while True:
+      data = freerice.getUserStats(group=mntr_gp)
+
+      LogFormatted(profile.name, str(data.rice_total), '', str(data.rank), '')
+
+      doSleep()
   except KeyboardInterrupt:
     USRC()
 else:
-  MainHack(log)
+  if threads > 1:
+    try:
+      for i in range(threads - 1):
+        #START THREAD
+
+        #logging.critical('Threads started: ' + str(i + 1), end='\r')  
+
+        sleep(0.5)
+      
+      #logging.critical('\nStarting thread %s in main program.' % threads)
+      
+      MainHack(log, threads - 1)
+    except KeyboardInterrupt:
+      USRC()
+  else:
+    MainHack(log)
