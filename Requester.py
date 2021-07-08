@@ -70,7 +70,7 @@ else:
 
   for opt, arg in _opts:
     if opt in ['-h', '--help']:
-      logging.critical("\rhttps://github.com/lafkpages/FreericeHack/blob/main/README.md\nUsage: \n  Requester.py [-h --help] \n  Requester.py [-u --user your_user_id] \n  Requester.py [-t --threads min/max/a_integer] \n  Requester.py [--no-log] \n  Requester.py [-T --use-tor]")
+      logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nUsage:\n\tRequester.py [-h --help]\n\t\tShows this help menu and exits.\n\tRequester.py [-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\tRequester.py [-t --threads \"min\"/\"max\"/integer]\n\t\tNot available yet.\n\tRequester.py [--no-log]\n\t\tDisables logs.\n\tRequester.py [-T --use-tor]\n\t\tSends the questions through Tor.\n\tRequester.py [-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\tRequester.py [-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\tRequester.py [-M --monitor-group]\n\t\tMonitorsthe amount of rice and rank of a group.")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
