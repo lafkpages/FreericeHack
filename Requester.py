@@ -42,6 +42,8 @@ fsuv    = 6                                        # exit code for freerice serv
 trer    = 7
 usrc    = 0                                        # exit code for user control C
 tnay    = 4                                        # exit code for threads not available
+schm    = 8                                        # exit code for search mode
+lbdm    = 9                                        # exit code for leaderboard view mode
 
 # Threads
 threads = 1                                        # number of threads to start
@@ -62,7 +64,7 @@ if len(sys.argv) < 2:
   logging.critical("\rNo arguments passed.")
 else:
   try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:mM", ["use-tor", "threads", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group'])   
+    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:mMsSlL", ["use-tor", "threads", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group', 'search', 'search-group', 'leaderboard', 'ldbd', 'groups-leaderboard', 'groups-ldbd', 'gl'])   
   except getopt.GetoptError: 
     logging.debug(sys.argv[1:])
     logging.critical("\rArgument parsing error.")
@@ -70,7 +72,7 @@ else:
 
   for opt, arg in _opts:
     if opt in ['-h', '--help']:
-      logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nUsage:\n\tRequester.py [-h --help]\n\t\tShows this help menu and exits.\n\tRequester.py [-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\tRequester.py [-t --threads \"min\"/\"max\"/integer]\n\t\tNot available yet.\n\tRequester.py [--no-log]\n\t\tDisables logs.\n\tRequester.py [-T --use-tor]\n\t\tSends the questions through Tor.\n\tRequester.py [-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\tRequester.py [-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\tRequester.py [-M --monitor-group]\n\t\tMonitorsthe amount of rice and rank of a group.")
+      logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nArguments:\n\t[-h --help]\n\t\tShows this help menu and exits.\n\n\t[-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\n\t[-t --threads \"min\"/\"max\"/integer]\n\t\tSets the amount of threads.\n\t\tNot available yet.\n\n\t[--no-log]\n\t\tDisables logs.\n\n\t[-T --use-tor]\n\t\tSends the questions through Tor.\n\n\t[-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\n\t[-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\n\t[-M --monitor-group]\n\t\tMonitors the amount of rice and rank of a group.\n\n\t[-s --search]\n\t\tSearch for a user.\n\n\t[-S --search-group]\n\t\tSearch for a group.\n\n\t[-l --ldbd --leaderboard]\n\t\tShows the users leaderboard.\n\t\tThis can be useful to see bellow the 50th user,\n\t\tsince Freerice doesn't allow that.\n\n\t\tNote: seems like the Freerice servers are having trouble\n\t\tserving this data correctly. The ranks might not be correct\n\t\tin the pages after the first page.\n\n\t[-L --gl --groups-ldbd --groups-leaderboard]\n\t\tShows the groups leaderboard.\n\n\t\tThis can be useful to see bellow the 50th group,\n\t\tsince Freerice doesn't allow that.")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
@@ -111,6 +113,67 @@ else:
       print('Monitor mode: on, for', msg)
       print('This will log', msg, 'rice, but will not increment it.')
       monitor = True
+    elif opt in {'-s', '-S', '--search', '--search-group'}:
+      srch_gp = not opt in {'-s', '--search'}
+      msg     = 'group' if srch_gp else 'user'
+
+      last_page   = 1
+
+      try:
+        print('Search mode: searching', msg + 's')
+        print('Search term must me at least 3 characters.')
+        search_term = ''
+        while len(search_term) < 3:
+          search_term = input(f'Search for a {msg}: ')
+
+        matches = []
+
+        for data in Freerice.getAllUsers(groups=srch_gp, get_profiles=True):
+          user_, page, total_pages, profile = data
+          last_page   = page
+          total_pages = total_pages
+
+          if search_term.lower() in profile['name'].lower():
+            exists = False
+            for match in matches:
+              if match[1]['id'] == user_['id']:
+                exists = True
+                break
+
+            if not exists:
+              match = [profile, user_]
+
+              print(f'\nMatch found in page {page}')
+              print( '\tName:', profile['name'])
+              print( '\tUUID:', user_['id'])
+              print( '\tRice:', user_['attributes']['rice'])
+              print( '\tRank:', user_['attributes']['rank'])
+              print( '')
+
+              matches.append(match)
+
+          #print(f'\r{page}/{total_pages}', end='')
+      except KeyboardInterrupt:
+        print(f'\rStopped search in page {last_page}/{total_pages}.')
+        print(f'Found {len(matches)} matches.')
+
+        exit(usrc)
+      finally:
+        exit()
+    elif opt in {'-l', '--leaderboard', '--ldbd', '-L', '--groups-leaderboard', '--groups-ldbd', '--gl'}:
+      groups_leaderboard = opt in {'-L', '--groups-leaderboard', '--groups-ldbd', '--gl'}
+
+      try:
+        for i, data in enumerate(Freerice.getAllUsers(groups=groups_leaderboard, get_profiles=True)):
+          user_, page, total_pages, profile = data
+          name = profile['name']
+          rank = user_['attributes']['rank']
+
+          print(f'{i + 1: >8}. {rank: >8}. {name}')
+      except KeyboardInterrupt:
+        exit(usrc)
+      finally:
+        exit(lbdm)
 
 # Define the hack class with your user id
 freerice = Freerice(user) # Pass your user ID
@@ -256,7 +319,7 @@ if monitor:
 
     TC()
 
-    profile = freerice.getUserProfile(group=mntr_gp)
+    profile = freerice.getUserProfile(user, group=mntr_gp)
 
     while True:
       data = freerice.getUserStats(group=mntr_gp)

@@ -27,7 +27,7 @@ class Data:
     self.game = ''
 
     self.name = ''
-    self.rank = ''
+    self.rank = 0
     self.avtr = ''
     
     self.members = []
@@ -39,6 +39,61 @@ class Data:
     self.question_txt = ''
 
 class Freerice:
+  # ============== URLS ==============
+  new_game_url   = 'https://engine.freerice.com/games?lang=en'
+  new_game_mth   = 'POST'
+
+  answer_url     = '' # will be autocompleted by newGame()
+  answer_url2    = '/answer?lang=en'
+  answer_mth     = 'PATCH'
+
+  stats_url      = 'https://engine.freerice.com/gamestats/rice-totals'
+  stats_mth      = 'GET' # or 'OPTIONS'
+
+  ads_url        = 'https://accounts.freerice.com/api/ads'
+  ads_mth        = 'GET' # or 'OPTIONS'
+
+  favicon_url    = 'https://freerice.com/favicon.ico'
+  favicon_mth    = 'GET'
+
+  eyecatcher_url = 'https://accounts.freerice.com/api/eye-catcher?_lang=en'
+  eyecatcher_mth = 'OPTIONS'
+
+  badges_url     = 'https://engine.freerice.com/badges/?limit=50&lang=en'
+  badges_mth     = 'GET'
+
+  announce_url   = 'https://accounts.freerice.com/api/announcements?lang=en'
+  announce_mth   = 'GET'
+
+  levels_url     = 'https://engine.freerice.com/levels?lang=en'
+  levels_mth     = 'GET' # or 'OPTIONS'
+
+  manifest_url   = 'https://freerice.com/manifest.json'
+  manifest_mth   = 'GET'
+
+  user_url       = 'https://engine.freerice.com/users/'
+  user_mth       = 'GET'
+
+  group_url      = 'https://engine.freerice.com/groups/'
+  group_mth      = 'GET'
+
+  ldbd_usrs_url  = 'https://engine.freerice.com/users?current=' # page number
+  ldbd_usrs_url2 = '&limit=50&_format=json'
+  ldbd_usrs_mthd = 'GET'
+
+  ldbd_grps_url  = 'https://engine.freerice.com/groups?current=' # page number
+  ldbd_grps_url2 = '&limit=50&_format=json'
+  ldbd_grps_mthd = 'GET'
+
+  prfl_usrs_url  = 'https://accounts.freerice.com/public/users?uuids=' # comma-sepparated user IDs
+  prfl_usrs_url2 = '&_format=json'
+  prfl_usrs_mthd = 'GET'
+
+  prfl_grps_url  = 'https://accounts.freerice.com/public/groups?uuids=' # comma-sepparated user IDs
+  prfl_grps_url2 = '&_format=json'
+  prfl_grps_mthd = 'GET'
+  # ============ END URLS ============
+
   def __init__(self, user_id):
     self.user       = user_id # user ID
     self.game       = ''      # game ID
@@ -51,63 +106,6 @@ class Freerice:
       'User-Agent'  : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
       'Accept'      : 'application/vnd.api+json;version=2'
     }
-
-    # ============== URLS ==============
-    self.new_game_url   = 'https://engine.freerice.com/games?lang=en'
-    self.new_game_mth   = 'POST'
-
-    self.answer_url     = '' # will be autocompleted by newGame()
-    self.answer_url2    = '/answer?lang=en'
-    self.answer_mth     = 'PATCH'
-
-    self.stats_url      = 'https://engine.freerice.com/gamestats/rice-totals'
-    self.stats_mth      = 'GET' # or 'OPTIONS'
-
-    self.ads_url        = 'https://accounts.freerice.com/api/ads'
-    self.ads_mth        = 'GET' # or 'OPTIONS'
-
-    self.favicon_url    = 'https://freerice.com/favicon.ico'
-    self.favicon_mth    = 'GET'
-
-    self.eyecatcher_url = 'https://accounts.freerice.com/api/eye-catcher?_lang=en'
-    self.eyecatcher_mth = 'OPTIONS'
-
-    self.badges_url     = 'https://engine.freerice.com/badges/?limit=50&lang=en'
-    self.badges_mth     = 'GET'
-
-    self.announce_url   = 'https://accounts.freerice.com/api/announcements?lang=en'
-    self.announce_mth   = 'GET'
-
-    self.levels_url     = 'https://engine.freerice.com/levels?lang=en'
-    self.levels_mth     = 'GET' # or 'OPTIONS'
-
-    self.manifest_url   = 'https://freerice.com/manifest.json'
-    self.manifest_mth   = 'GET'
-
-    self.user_url       = 'https://engine.freerice.com/users/'
-    self.user_mth       = 'GET'
-
-    self.group_url      = 'https://engine.freerice.com/groups/'
-    self.group_mth      = 'GET'
-
-    self.ldbd_usrs_url  = 'https://engine.freerice.com/users?current=' # page number
-    self.ldbd_usrs_url2 = '&limit=50&_format=json'
-    self.ldbd_usrs_mthd = 'GET'
-
-    self.ldbd_grps_url  = 'https://engine.freerice.com/groups?current=' # page number
-    self.ldbd_grps_url2 = '&limit=50&_format=json'
-    self.ldbd_grps_mthd = 'GET'
-
-    self.prfl_usrs_url  = 'https://accounts.freerice.com/public/users?uuids=' # comma-sepparated user IDs
-    self.prfl_usrs_url2 = '&_format=json'
-    self.prfl_usrs_mthd = 'GET'
-
-    self.prfl_grps_url  = 'https://accounts.freerice.com/public/groups?uuids=' # comma-sepparated user IDs
-    self.prfl_grps_url2 = '&_format=json'
-    self.prfl_grps_mthd = 'GET'
-    # ============ END URLS ============
-
-
 
     self.tor        = False
     try:
@@ -276,17 +274,18 @@ class Freerice:
     
     return data
   
-  def getUserProfile(self, user=None, group=False):
-    if user is None:
-      user = self.user
+  @classmethod
+  def getUserProfile(cls, user, group=False):
+    # if user is None:
+    #   user = cls.user
 
     URL = ''
     if group:
-      URL = self.prfl_grps_url + user + self.prfl_grps_url2
+      URL = cls.prfl_grps_url + user + cls.prfl_grps_url2
     else:
-      URL = self.prfl_usrs_url + user + self.prfl_usrs_url2
+      URL = cls.prfl_usrs_url + user + cls.prfl_usrs_url2
 
-    req  = r.request(self.prfl_grps_mthd if group else self.prfl_usrs_mthd, URL)
+    req  = r.request(cls.prfl_grps_mthd if group else cls.prfl_usrs_mthd, URL)
     json = {}
     data = Data()
     
@@ -305,7 +304,7 @@ class Freerice:
     except:
       data.error = True
 
-      self.last_ret_v = data
+      cls.last_ret_v = data
 
       return data
 
@@ -314,8 +313,83 @@ class Freerice:
     try:
       data.name = json[fk]['name']
     except KeyError:
-      fk = self.user + self.prfl_usrs_url2
+      fk += cls.prfl_usrs_url2
       data.name = json[fk]['name']
     data.avtr = json[fk]['avatar']
 
     return data
+  
+  @classmethod
+  def getAllUsers(cls, groups=False, get_profiles=False):
+    # data = {}
+
+    url = ''
+    if groups:
+      url = cls.ldbd_grps_url + '1' + cls.ldbd_grps_url2
+    else:
+      url = cls.ldbd_usrs_url + '1' + cls.ldbd_usrs_url2
+    page = 1
+
+    while True:
+      req  = r.request(cls.ldbd_usrs_mthd, url)
+      json = req.json()
+
+      # data.update(json)
+      users       = json['data']
+      page        = json['meta']['pagination']['current_page']
+      total_pages = json['meta']['pagination']['total_pages']
+
+      profiles      = {}
+      profiles_list = []
+
+      if get_profiles:
+        uuids = list(
+          map(
+            lambda user: user['id'],
+            users
+          )
+        )
+        uuids = ','.join(uuids)
+        
+        url2 = ''
+        if groups:
+          url2 = cls.prfl_grps_url + uuids + cls.prfl_grps_url2
+        else:
+          url2 = cls.prfl_usrs_url + uuids + cls.prfl_usrs_url2
+
+        req2 = r.request(cls.prfl_grps_mthd if groups else cls.prfl_usrs_mthd, url2)
+
+        profiles = req2.json()
+
+        for user_id in profiles:
+          user_ = profiles[user_id]
+
+          data_ = Data()
+
+          data_.name = user_['name']
+          data_.avtr = user_['avatar']
+
+          profiles_list.append(data_)
+
+      for user in users:
+        if get_profiles:
+          yield user, page, total_pages, profiles[user['id']]
+        else:
+          yield user, page, total_pages, {}
+
+      try:
+        #print('Old URL:', url)
+
+        #url = json['links']['next']# + cls.ldbd_grps_url2
+        page += 1
+        if groups:
+          url = cls.ldbd_grps_url + str(page) + cls.ldbd_grps_url2
+        else:
+          url = cls.ldbd_usrs_url + str(page) + cls.ldbd_usrs_url2
+
+        #print('New URL:', url)
+      except KeyError:
+        # No more data
+        break
+    
+    # return data
