@@ -243,17 +243,18 @@ class Freerice:
 
     return ret
   
-  def getUserStats(self, user=None, group=False):
-    if user is None:
-      user = self.user
+  @classmethod
+  def getUserStats(cls, user=None, group=False):
+    # if user is None:
+    #   user = cls.user
 
     URL = ''
     if group:
-      URL = self.group_url + user
+      URL = cls.group_url + user
     else:
-      URL = self.user_url + user
+      URL = cls.user_url + user
 
-    req = r.request(self.group_mth if group else self.user_mth, URL)
+    req = r.request(cls.group_mth if group else cls.user_mth, URL)
 
     data = Data()
     json = {}
@@ -263,7 +264,7 @@ class Freerice:
     except:
       data.error = True
 
-      self.last_ret_v = data
+      cls.last_ret_v = data
 
       return data
 
