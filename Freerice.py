@@ -119,6 +119,9 @@ class Freerice:
     self.categories = {
       'multiplication-table': '66f2a9aa-bac2-5919-997d-2d17825c1837'
     }
+  
+  def __getitem__(self, item):
+    return getattr(self, item)
 
   def newGame(self):
     data = {
