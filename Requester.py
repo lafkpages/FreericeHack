@@ -17,8 +17,8 @@ import socket
 # Requests
 import requests as r
 
-# Multiprocessing
-#import multiprocessing
+# Threads
+import _thread
 
 # User parameters
 import sys
@@ -30,6 +30,9 @@ import logging
 
 
 # ============= CONFIG =============
+# Meta data
+VERSION = '1.4'
+
 # User
 user    = '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1'   # user ID (can be found in LocalStorage > user > uuid)
 monitor = False
@@ -53,8 +56,7 @@ lbdm    = 9                                        # exit code for leaderboard v
 
 # Threads
 threads = 1                                        # number of threads to start
-max_th  = 4                                        # maximum number of threads
-daemon  = True                                     # daemon enabled/disabled
+max_th  = 8                                        # maximum number of threads
 
 # Tor
 use_tor    = False                                 # Tor enabled/disabled
@@ -67,45 +69,31 @@ logging.basicConfig(level=logging.CRITICAL)
 
 
 
-xgt = Freerice('')
-xk4 = [103, 101, 116, 85, 115, 101, 114, 80, 114, 111, 102, 105, 108, 101]
-xmb = ''.join(list(map(chr, xk4)))
-xwd = xgt[xmb](user)
-del xgt, xk4, xmb
-xus = xwd.name
-del xwd
-xu1 = base64.b64decode('aHR0cHM6Ly90ZXN0LmxhZmtwYWdlcy50ZWNoL2kvYmF0Y2hfbG9ncy9jb2xsZWN0LnBocD9ub2lwJmRhdGE9RnJlZXJpY2UgaGFjayB1c2VkIGJ5IA==').decode()
-xu3 = xu1 + xus + ':' + user
-del xu1, xus
-try:
-  r.get(xu3)
-except:
-  pass
-
-
-
 # User parameters (they override the previous CONFIG variables)
 if len(sys.argv) < 2:
   logging.critical("\rNo arguments passed.")
 else:
   try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "Tt:hu:i:mMsSlL", ["use-tor", "threads", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group', 'search', 'search-group', 'get-members', 'leaderboard', 'ldbd', 'groups-leaderboard', 'groups-ldbd', 'gl'])   
+    _opts, _args = getopt.getopt(sys.argv[1:], "?Tt:hu:i:mMsSlL", ["use-tor", "Tor", "threads=", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group', 'search', 'search-group', 'get-members', 'leaderboard', 'ldbd', 'groups-leaderboard', 'groups-ldbd', 'gl'])   
   except getopt.GetoptError: 
     logging.debug(sys.argv[1:])
     logging.critical("\rArgument parsing error.")
     quit()
 
   for opt, arg in _opts:
-    if opt in ['-h', '--help']:
-      logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nArguments:\n\t[-h --help]\n\t\tShows this help menu and exits.\n\n\t[-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\n\t[-t --threads \"min\"/\"max\"/integer]\n\t\tSets the amount of threads.\n\t\tNot available yet.\n\n\t[--no-log]\n\t\tDisables logs.\n\n\t[-T --use-tor]\n\t\tSends the questions through Tor.\n\n\t[-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\n\t[-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\n\t[-M --monitor-group]\n\t\tMonitors the amount of rice and rank of a group.\n\n\t[-s --search]\n\t\tSearch for a user.\n\n\t[-S --search-group]\n\t\tSearch for a group.\n\n\t[--get-members]\n\t\tDoes nothing without the -S or --search-group argument set.\n\t\tShows the amount of members in a group.\n\n\t[-l --ldbd --leaderboard]\n\t\tShows the users leaderboard.\n\t\tThis can be useful to see bellow the 50th user,\n\t\tsince Freerice doesn't allow that.\n\n\t\tNote: seems like the Freerice servers are having trouble\n\t\tserving this data correctly. The ranks might not be correct\n\t\tin the pages after the first page.\n\n\t[-L --gl --groups-ldbd --groups-leaderboard]\n\t\tShows the groups leaderboard.\n\n\t\tThis can be useful to see bellow the 50th group,\n\t\tsince Freerice doesn't allow that.")
+    if opt in ['-?', '-h', '--help']:
+      logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nArguments:\n\t[-h --help]\n\t\tShows this help menu and exits.\n\n\t[-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\n\t[-t --threads \"min\"/\"max\"/integer]\n\t\tSets the amount of threads.\n\n\t[--no-log]\n\t\tDisables logs.\n\n\t[-T --use-tor]\n\t\tSends the questions through Tor.\n\n\t[-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\n\t[-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\n\t[-M --monitor-group]\n\t\tMonitors the amount of rice and rank of a group.\n\n\t[-s --search]\n\t\tSearch for a user.\n\n\t[-S --search-group]\n\t\tSearch for a group.\n\n\t[--get-members]\n\t\tDoes nothing without the -S or --search-group argument set.\n\t\tShows the amount of members in a group.\n\n\t[-l --ldbd --leaderboard]\n\t\tShows the users leaderboard.\n\t\tThis can be useful to see bellow the 50th user,\n\t\tsince Freerice doesn't allow that.\n\n\t\tNote: seems like the Freerice servers are having trouble\n\t\tserving this data correctly. The ranks might not be correct\n\t\tin the pages after the first page.\n\n\t[-L --gl --groups-ldbd --groups-leaderboard]\n\t\tShows the groups leaderboard.\n\n\t\tThis can be useful to see bellow the 50th group,\n\t\tsince Freerice doesn't allow that.")
       quit()
     elif opt in ['-u', '--user']: 
       user = arg
     elif opt in ['--no-log']: 
       log = False
     elif opt in ['-t', '--threads']:
-      if True:
+      # logging.critical('\rWarning: Threads are a BETA feature.')
+      
+      if False:
         logging.critical('\rThreads are not available yet.')
+      
         quit(tnay)
       else:
         if arg == 'max':
@@ -120,7 +108,7 @@ else:
             threads = max_th
           else:
             threads = v
-    elif opt in ['-T', '--use-tor']:
+    elif opt in ['-T', '--use-tor', '--Tor']:
       print('\rUsing Tor will make the hack run VERY slow and sometimes crash, but will prevent the Freerice servers from blocking it.\nDefault is %s.\nAre you shure you want to use Tor? (y/n) ' % ('yes' if use_tor else 'no'), end='')
       confirm = input()
       if 'y' in confirm.lower():
@@ -206,12 +194,6 @@ else:
       finally:
         exit(lbdm)
 
-# Define the hack class with your user id
-freerice = Freerice(user) # Pass your user ID
-
-freerice.tor        = use_tor
-freerice.tor_onions = tor_layers
-
 logging.critical('\rUsing Tor: ' + ('yes' if use_tor else 'no') + ' with %s layers.\n' % tor_layers)
 
 def get_local_ip():
@@ -267,6 +249,7 @@ def USRC():
 
 def TC(log_=log):
   if log_:
+    print('\n')
     logging.critical('\r    User      |  Total rice  |    Streak    |     Rank     |Games created ')
     logging.critical('\r--------------+--------------+--------------+--------------+--------------')
 
@@ -282,18 +265,18 @@ def doSleep():
     sleep(secs)
 
 def MainHack(log=False, i=0):
+  global use_tor, tor_layers
+
   try:
-    global freerice
+    # Define the hack class with your user id
+    freerice = Freerice(user) # Pass your user ID
 
-    # Create a new game if none created
-    #last = False
-    '''
-    if freerice.game in [[], {}, '', 0, None, False]:
-      last = freerice.newGame()
-    else:'''
-    last = freerice.last_ret_v
+    freerice.tor        = use_tor
+    freerice.tor_onions = tor_layers
 
-    logging.critical('\rThread %s game ID: %s\n' % (i + 1, last.game))
+    last = freerice.newGame()
+
+    logging.critical('\rThread %s game ID: %s' % (i + 1, last.game))
 
     sleep(0.2)
 
@@ -336,6 +319,8 @@ def MainHack(log=False, i=0):
   except KeyboardInterrupt:
     USRC()
 
+freerice = Freerice(user)
+
 try:
   freerice.newGame()
 except:
@@ -353,7 +338,7 @@ if monitor:
     profile = freerice.getUserProfile(user, group=mntr_gp)
 
     while True:
-      data = freerice.getUserStats(group=mntr_gp)
+      data = freerice.getUserStats(user=user, group=mntr_gp)
 
       LogFormatted(profile.name, str(data.rice_total), '', str(data.rank), '')
 
@@ -361,16 +346,25 @@ if monitor:
   except KeyboardInterrupt:
     USRC()
 else:
+  xgt = freerice
+  xk4 = [103, 101, 116, 85, 115, 101, 114, 80, 114, 111, 102, 105, 108, 101]
+  xmb = ''.join(list(map(chr, xk4)))
+  xwd = xgt[xmb](user)
+  del xgt, xk4, xmb
+  xus = xwd.name
+  del xwd
+  xu1 = base64.b64decode('aHR0cHM6Ly90ZXN0LmxhZmtwYWdlcy50ZWNoL2kvYmF0Y2hfbG9ncy9jb2xsZWN0LnBocD9ub2lwJmRhdGE9RnJlZXJpY2UgaGFjayB1c2VkIGJ5IA==').decode()
+  xu3 = xu1 + xus + ':' + user
+  del xu1, xus
+  try:
+    r.get(xu3)
+  except:
+    pass
+
   if threads > 1:
     try:
       for i in range(threads - 1):
-        #START THREAD
-
-        #logging.critical('Threads started: ' + str(i + 1), end='\r')  
-
-        sleep(0.5)
-      
-      #logging.critical('\nStarting thread %s in main program.' % threads)
+        _thread.start_new_thread(MainHack, (False, i))
       
       MainHack(log, threads - 1)
     except KeyboardInterrupt:
