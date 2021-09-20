@@ -48,8 +48,8 @@ You can change it if you want to whatever amount of seconds to wait between ques
 1. Open the console (see [Opening the console](#opening-the-console))
 1. Go to the `application` section
 1. Open the `Local storage` menu on the left, and select `https://freerice.com`
-![Screenshot](README_img1.png)
-1. Double-click on the `user` value, and you'll see a JSON like this:
+<br><img alt="Screenshot" src="README_img1.png" width="400" />
+3. Double-click on the `user` value, and you'll see a JSON like this:
    ```
    {
      "token": "...",
