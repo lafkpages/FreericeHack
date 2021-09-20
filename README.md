@@ -39,13 +39,8 @@ You can change it if you want to whatever amount of seconds to wait between ques
 1. Press the spacebar and the correct answer will be clicked automatically.
 
 ## Opening the console
-### MAC
-#### Chrome
-
-Press `Cmd + Alt + J`.
-### Windows/Linux
-
-Press `F12` (or `FN + F12` on some keyboards).
+### Chrome
+<img alt="Screen recording" src="README_img2.gif" width="400" />
 
 ## User ID
 ### Chrome
