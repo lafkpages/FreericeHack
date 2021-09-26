@@ -20,7 +20,7 @@ A hack for https://freerice.com (useful if you want to beat BTS ARMY)
 You can change it if you want to whatever amount of seconds to wait between question.
 
 ### Android app (APK)
-1. Download our [most recent APK](Client_APK/FreericeHack_v1_1.apk) to your phone
+1. Download our [most recent APK](Client_APK/FreericeHack_v1_2.apk) to your phone
 2. Go to your downloads and install it
 
 ### JavaScript (automatic)
