@@ -1,0 +1,9 @@
+# Run the shell script
+# which automatically
+# switches Replit servers
+# when it gets banned
+run = "./main.sh"
+
+# Open the shell script
+# as the default file
+entrypoint = "main.sh"
