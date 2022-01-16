@@ -39,7 +39,7 @@ You can change it if you want to whatever amount of seconds to wait between ques
 6. Press the spacebar and the correct answer will be clicked automatically.
 
 ### Chrome extension
-1. See [this video](README_vid1.mp4) for instructions
+1. See [this video](https://lafkpages.tech/hack/freerice/ChromeExtensionInstructions.mp4) for instructions
 
 ## Opening the console
 ### Chrome
