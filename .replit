@@ -7,3 +7,7 @@ run = "./main.sh"
 # Open the shell script
 # as the default file
 entrypoint = "main.sh"
+
+# Define language for
+# importing from GitHub
+language = "python3"
