@@ -38,8 +38,8 @@ You can change it if you want to whatever amount of seconds to wait between ques
 5. Close the console and click anywhere on the Freerice page.
 6. Press the spacebar and the correct answer will be clicked automatically.
 
-<!--### Chrome extension
-1. -->
+### Chrome extension
+1. See [this video](README_vid1.mp4) for instructions
 
 ## Opening the console
 ### Chrome
