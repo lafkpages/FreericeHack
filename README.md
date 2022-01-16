@@ -2,7 +2,7 @@
 A hack for https://freerice.com (useful if you want to beat BTS ARMY)
 
 ## Usage
-### Python3
+### Python 3
 1. Install [Python3](https://python.org) (if not already installed)
 2. Open a terminal and run `pip3 install requests torpy`
    - If that doesn't work, try `python3 -m pip install requests torpy` or `python -m pip install requests torpy`
@@ -11,11 +11,11 @@ A hack for https://freerice.com (useful if you want to beat BTS ARMY)
 4. In the terminal, go to your downloads folder
    - Windows: `cd ~\Downloads`
    - Mac/Linux: `cd ~/Downloads`
-5. Run `python3 Requests.py -u your_user_id` (see the [User ID](#user-id)s section)
-   - If that doesn't work, try `python Requests.py -u your_user_id`
+5. Run `python3 Requester.py -u your_user_id` (see the [User ID](#user-id)s section)
+   - If that doesn't work, try `python Requester.py -u your_user_id`
 6. Watch your amount of rice grow. But remember to open the [Freerice website](https://freerice.com) so they have some kind of income.
 
-**Note:** if you get blocked very quickly, try running it with an interval of 4 seconds: `python3 Requests.py -i 4`
+**Note:** if you get blocked very quickly, try running it with an interval of 4 seconds: `python3 Requester.py -i 4`
 <br>
 You can change it if you want to whatever amount of seconds to wait between question.
 
@@ -37,6 +37,9 @@ You can change it if you want to whatever amount of seconds to wait between ques
 4. Paste it into the console and press `Enter`.
 5. Close the console and click anywhere on the Freerice page.
 6. Press the spacebar and the correct answer will be clicked automatically.
+
+<!--### Chrome extension
+1. -->
 
 ## Opening the console
 ### Chrome
