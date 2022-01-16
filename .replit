@@ -2,7 +2,7 @@
 # which automatically
 # switches Replit servers
 # when it gets banned
-run = "./main.sh"
+run = "./replit.sh"
 
 # Open the shell script
 # as the default file
