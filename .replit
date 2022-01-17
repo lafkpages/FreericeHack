@@ -6,7 +6,7 @@ run = "./replit.sh"
 
 # Open the shell script
 # as the default file
-entrypoint = "main.sh"
+entrypoint = "README.md"
 
 # Define language for
 # importing from GitHub
