@@ -1,0 +1,46 @@
+=== How to run the Freerice Hack on Replit ===
+
+
+--- Importing from GitHub ---
+
+If you're seeing this, you've probably already done this,
+so don't do it again :)
+
+1. Create a new Repl, and click “Import from GitHub”
+2. In GitHub URL, type “https://github.com/lafkpages/FreericeHack”, and press Enter
+3. If it asks you for a command to run, type “./replit.sh”
+4. If it asks what language it is, select “python3”
+
+
+--- Running from Replit ---
+
+1. Simply click the green Run button
+  1.1. If it doesn't work:
+    1.1.1. If it says “Freerice servers are unavailable”,
+      it means that you have temporarely been banned
+      from Freerice, or that the bot couldn't connect
+      to the Freerice servers. Check you have WiFi, and
+      just wait 5 to 15 minutes
+    1.1.2. If it says “User controlled C”, it means that
+      you pressed Control + C and you manually quit the bot
+    1.1.3. If you get “Argument parsing error”, it means
+      that invalid arguments were passed to the program,
+      and that it automatically quit
+    1.1.4. Anything else, just re-run the bot. If you still
+      get the error, check that you have WiFi and wait
+      5 to 15 minutes
+  1.2. If it says “Replit: updating package configuration”,
+    it means that Replit is updating packages. The first time
+    you run, it might take a few seconds, but after, it should
+    be quicker
+2. If you want to pass extra arguments, you have to use the
+  shell. Click were it says “Shell”, and type “python3 Requester.py”
+  with any other arguments at the end. For a list of all arguments,
+  type “python3 Requester.py --help” in the shell
+
+
+--- Stopping the bot ---
+
+Just go to the console and press Ctrl + C
+
+Note: if you're on MacOS, make sure you press Control and not Command
