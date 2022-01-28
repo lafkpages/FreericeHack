@@ -37,13 +37,13 @@ trap catch INT TERM EXIT
 main () {
   if [ -n "$FREERICE_INTERVAL" ]
   then
-    python3 Requester.py -t "$FREERICE_THREADS" -i "$FREERICE_INTERVAL"
+    python3 -u Requester.py -t "$FREERICE_THREADS" -i "$FREERICE_INTERVAL"
   else
-    python3 Requester.py -t "$FREERICE_THREADS"
+    python3 -u Requester.py -t "$FREERICE_THREADS"
   fi
 }
 
 # Run the Freerice hack
 export FREERICE_THREADS=min
 export FREERICE_INTERVAL=
-main
+main 2>&1 | tee .replit.log
