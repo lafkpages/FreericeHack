@@ -46,4 +46,4 @@ main () {
 # Run the Freerice hack
 export FREERICE_THREADS=min
 export FREERICE_INTERVAL=
-main 2>&1 | tee .replit.log
+main # 2>&1 | tee .replit.log

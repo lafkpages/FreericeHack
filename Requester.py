@@ -167,7 +167,7 @@ else:
                 stats = Freerice.getUserStats(user=user_['id'], group=True)
 
                 print('\tMembers:', len(stats.members))
-              print( '')
+              print('')
 
               matches.append(match)
 
