@@ -27,6 +27,9 @@ import getopt
 # Logs
 import logging
 
+# Env
+import os
+
 
 
 # ============= CONFIG =============
@@ -34,7 +37,7 @@ import logging
 VERSION = '1.4'
 
 # User
-user    = '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1'   # user ID (can be found in LocalStorage > user > uuid)
+user    = os.environ.get('FREERICE_USER', '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1')   # user ID (can be found in LocalStorage > user > uuid)
 monitor = False
 mntr_gp = False
 
