@@ -33,11 +33,10 @@ import os
 
 
 # ============= CONFIG =============
-# Meta data
-VERSION = '1.4'
 
 # User
-user    = os.environ.get('FREERICE_USER', '14cd5145-e13c-40fe-aad0-7a2bfb31b2f1')   # user ID (can be found in LocalStorage > user > uuid)
+USER    = ('FREERICE_USER', '0f5beeac-ee1d-4de4-a841-f3b788cb616b')
+user    = os.environ.get(*USER)                    # user ID (can be found in LocalStorage > user > uuid)
 monitor = False
 mntr_gp = False
 
