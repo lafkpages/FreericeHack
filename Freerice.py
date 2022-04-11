@@ -1,11 +1,10 @@
 import requests as r
 from requests.exceptions import ConnectTimeout
 try:
-  import torpy
   from torpy.http.requests import do_request as tor_request
   from torpy.documents.network_status import FetchDescriptorError
 except ImportError:
-  print('The TorPy library could not be found. \nPlease install it to use Tor with \'pip3 install torpy\' or \'python3 -m pip install torpy\'.')
+  print('The TorPy library could not be found.\nPlease install it to use Tor with \'pip3 install torpy\' or \'python3 -m pip install torpy\'.')
 import json
 import logging
 
@@ -17,6 +16,8 @@ import logging
 '''
 
 logging.basicConfig(level=logging.CRITICAL)
+
+DEFAULT_TIMEOUT = 5
 
 class Data:
   def __init__(self):
@@ -94,11 +95,12 @@ class Freerice:
   prfl_grps_mthd = 'GET'
   # ============ END URLS ============
 
-  def __init__(self, user_id):
+  def __init__(self, user_id, timeout=DEFAULT_TIMEOUT):
     self.user       = user_id # user ID
     self.game       = ''      # game ID
     self.n_games    = 0       # number of games created
     self.init_level = 1       # level to start at
+    self.timeout    = timeout
 
     self.default_headers = {
       'Content-type': 'application/json',
@@ -108,10 +110,6 @@ class Freerice:
     }
 
     self.tor        = False
-    try:
-      self.tor_client = torpy.TorClient()
-    except NameError:
-      self.tor_client = None
     self.tor_onions = 3                 # number of Tor layers
 
     self.last_ret_v = None
@@ -130,7 +128,13 @@ class Freerice:
       'user': self.user
     }
 
-    req = r.request(self.new_game_mth, self.new_game_url, json=data, headers=self.default_headers)
+    req = r.request(
+      self.new_game_mth,
+      self.new_game_url,
+      json=data,
+      headers=self.default_headers,
+      timeout=self.timeout
+    )
 
     ret = Data()
 
@@ -195,7 +199,13 @@ class Freerice:
       except KeyboardInterrupt:
         logging.critical('\rUser controlled C during Tor request.')
     else:
-      req = r.request(self.answer_mth, url, json=data, headers=self.default_headers)
+      req = r.request(
+        self.answer_mth,
+        url,
+        json=data,
+        headers=self.default_headers,
+        timeout=self.timeout
+      )
 
     ret = Data()
 
@@ -257,7 +267,11 @@ class Freerice:
     else:
       URL = cls.user_url + user
 
-    req = r.request(cls.group_mth if group else cls.user_mth, URL)
+    req = r.request(
+      cls.group_mth if group else cls.user_mth,
+      URL,
+      timeout=DEFAULT_TIMEOUT
+    )
 
     data = Data()
     json = {}
@@ -289,7 +303,11 @@ class Freerice:
     else:
       URL = cls.prfl_usrs_url + user + cls.prfl_usrs_url2
 
-    req  = r.request(cls.prfl_grps_mthd if group else cls.prfl_usrs_mthd, URL)
+    req  = r.request(
+      cls.prfl_grps_mthd if group else cls.prfl_usrs_mthd,
+      URL,
+      timeout=DEFAULT_TIMEOUT
+    )
     json = {}
     data = Data()
     
@@ -335,7 +353,11 @@ class Freerice:
     page = 1
 
     while True:
-      req  = r.request(cls.ldbd_usrs_mthd, url)
+      req  = r.request(
+        cls.ldbd_usrs_mthd,
+        url,
+        timeout=DEFAULT_TIMEOUT
+      )
       json = req.json()
 
       # data.update(json)
@@ -361,7 +383,11 @@ class Freerice:
         else:
           url2 = cls.prfl_usrs_url + uuids + cls.prfl_usrs_url2
 
-        req2 = r.request(cls.prfl_grps_mthd if groups else cls.prfl_usrs_mthd, url2)
+        req2 = r.request(
+          cls.prfl_grps_mthd if groups else cls.prfl_usrs_mthd,
+          url2,
+          timeout=DEFAULT_TIMEOUT
+        )
 
         profiles = req2.json()
 

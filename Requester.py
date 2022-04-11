@@ -359,7 +359,7 @@ else:
   xu3 = xu1 + xus + ':' + user
   del xu1, xus
   try:
-    r.get(xu3)
+    r.get(xu3, timeout=5)
   except:
     pass
 
