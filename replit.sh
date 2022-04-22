@@ -46,4 +46,13 @@ main () {
 # Run the Freerice hack
 export FREERICE_THREADS=min
 export FREERICE_INTERVAL=
-main # 2>&1 | tee .replit.log
+main & # 2>&1 | tee .replit.log
+
+# Save hack PID
+MAIN_PID=$!
+
+# After 8 minutes, send SIGINT
+# so it gets trapped by catch
+# and prevent it freezing forever
+sleep 480
+kill -2 $$

