@@ -4,6 +4,7 @@ A hack for https://freerice.com (useful if you want to beat BTS ARMY)
 ## Usage
 ### Python 3
 1. Install [Python3](https://python.org) (if not already installed)
+
 2. Open a terminal and run `pip3 install requests torpy`
    - If that doesn't work, try `python3 -m pip install requests torpy` or `python -m pip install requests torpy`
 3. Download [Freerice.py](Freerice.py) and [Requester.py](Requester.py)

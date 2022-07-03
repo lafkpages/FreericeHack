@@ -2,7 +2,7 @@
 from Freerice import Freerice, ConnectTimeout
 try:
   from Freerice import FetchDescriptorError
-except:
+except ImportError:
   FetchDescriptorError = Exception
 
 # Base 64
@@ -75,9 +75,9 @@ logging.basicConfig(level=logging.CRITICAL)
 if len(sys.argv) < 2:
   logging.critical("\rNo arguments passed.")
 else:
-  try: 
-    _opts, _args = getopt.getopt(sys.argv[1:], "?Tt:hu:i:mMsSlL", ["use-tor", "Tor", "threads=", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group', 'search', 'search-group', 'get-members', 'leaderboard', 'ldbd', 'groups-leaderboard', 'groups-ldbd', 'gl'])   
-  except getopt.GetoptError: 
+  try:
+    _opts, _args = getopt.getopt(sys.argv[1:], "?Tt:hu:i:mMsSlL", ["use-tor", "Tor", "threads=", "no-log", "help", "user=", 'interval=', 'monitor', 'monitor-group', 'search', 'search-group', 'get-members', 'leaderboard', 'ldbd', 'groups-leaderboard', 'groups-ldbd', 'gl'])
+  except getopt.GetoptError:
     logging.debug(sys.argv[1:])
     logging.critical("\rArgument parsing error.")
     quit()
@@ -86,13 +86,13 @@ else:
     if opt in ['-?', '-h', '--help']:
       logging.critical("\rPlease see https://github.com/lafkpages/FreericeHack\n\nArguments:\n\t[-h --help]\n\t\tShows this help menu and exits.\n\n\t[-u --user your_user_id]\n\t\tSets the user ID to give rice to.\n\t\tIt can also be a group ID for monitoring.\n\n\t[-t --threads \"min\"/\"max\"/integer]\n\t\tSets the amount of threads.\n\n\t[--no-log]\n\t\tDisables logs.\n\n\t[-T --use-tor]\n\t\tSends the questions through Tor.\n\n\t[-i --interval integer]\n\t\tSets an interval between the questions.\n\t\tThis can be an integer or a floating-point (decimal) number.\n\n\t[-m --monitor]\n\t\tMonitors the amount of rice and rank of a user.\n\n\t[-M --monitor-group]\n\t\tMonitors the amount of rice and rank of a group.\n\n\t[-s --search]\n\t\tSearch for a user.\n\n\t[-S --search-group]\n\t\tSearch for a group.\n\n\t[--get-members]\n\t\tDoes nothing without the -S or --search-group argument set.\n\t\tShows the amount of members in a group.\n\n\t[-l --ldbd --leaderboard]\n\t\tShows the users leaderboard.\n\t\tThis can be useful to see bellow the 50th user,\n\t\tsince Freerice doesn't allow that.\n\n\t\tNote: seems like the Freerice servers are having trouble\n\t\tserving this data correctly. The ranks might not be correct\n\t\tin the pages after the first page.\n\n\t[-L --gl --groups-ldbd --groups-leaderboard]\n\t\tShows the groups leaderboard.\n\n\t\tThis can be useful to see bellow the 50th group,\n\t\tsince Freerice doesn't allow that.")
       quit()
-    elif opt in ['-u', '--user']: 
+    elif opt in ['-u', '--user']:
       user = arg
-    elif opt in ['--no-log']: 
+    elif opt in ['--no-log']:
       log = False
     elif opt in ['-t', '--threads']:
       # logging.critical('\rWarning: Threads are a BETA feature.')
-      
+
       if False:
         logging.critical('\rThreads are not available yet.')
       

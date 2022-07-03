@@ -2,17 +2,17 @@
 // Save it as a property of window to prevent re-defining variables if the extension is activated twice
 window.freeRiceHackFunc = function()
 { 
-  let problem = document.getElementsByClassName("card-title")[0].innerText;   // '11 x 12'
-  let pr      = problem.replace('x', '*');                                    // '11 * 12'
+  let problem = document.getElementsByClassName("card-title")[0].innerText; // '11 x 12'
+  let pr      = problem.split('x').map(n => parseInt(n)); // [11, 12]
 
-  let answer = eval(pr);                                                      // 132
+  let answer = pr[0] * pr[1]; // 132
 
-  let opts = document.getElementsByClassName('card-button');                  // [HTMLElement, HTMLElement, HTMLElement, HTMLElement]
+  let opts = document.getElementsByClassName('card-button'); // [HTMLElement x 4]
 
-  let a = opts[0];                                                            // HTMLElement
-  let b = opts[1];                                                            // HTMLElement
-  let c = opts[2];                                                            // HTMLElement
-  let d = opts[3];                                                            // HTMLElement
+  let a = opts[0]; // HTMLElement
+  let b = opts[1]; // HTMLElement
+  let c = opts[2]; // HTMLElement
+  let d = opts[3]; // HTMLElement
 
   let correct = true;
 
@@ -42,10 +42,10 @@ window.freeRiceHackFunc = function()
   for (let i = 0; i < window.bruh.length; i++)
   {
     clearTimeout(window.bruh[i]);
-    bruh.shift();
+    window.bruh.shift();
   }
 
-  bruh.push(setTimeout(window.freeRiceHackFunc, window.freeRiceHackIntr));
+  window.bruh.push(setTimeout(window.freeRiceHackFunc, window.freeRiceHackIntr));
 }
 
 if (location.hostname.includes('freerice'))
@@ -55,7 +55,7 @@ if (location.hostname.includes('freerice'))
   window.bruh = [];
 
   // Start the hack with an initial timeout, it will recall itself automatically
-  bruh.push(setTimeout(window.freeRiceHackFunc, window.freeRiceHackIntr));
+  window.bruh.push(setTimeout(window.freeRiceHackFunc, window.freeRiceHackIntr));
 }
 else
 {

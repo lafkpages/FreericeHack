@@ -1,7 +1,6 @@
 // Define vars representing HTMLDom
 let IntrSct = document.querySelector('#IntrSct');  // <input id="IntrSct" type="range">
 let Intr    = document.querySelector('#Intr');     // <span id="Intr">
-let IntrReq = document.querySelector('#IntrReq');  // <button id="IntrReq">
 let IntrClk = document.querySelector('#IntrClk');  // <button id="IntrClk">
 let SpbrClk = document.querySelector('#SpbrClk');  // <button id="SpbrClk">
 
@@ -21,7 +20,7 @@ IntrClk.addEventListener('click', function()
     });
 
     chrome.tabs.executeScript(tab.id, {
-      file: 'IntrClk.js'
+      file: 'IntrClk.js',
     });
   });
 });

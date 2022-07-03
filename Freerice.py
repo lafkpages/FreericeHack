@@ -21,6 +21,10 @@ DEFAULT_TIMEOUT = 5
 
 class Data:
   def __init__(self):
+    '''
+    The Data class is used for parsing responses from the Freerice API
+    '''
+    
     self.error      = False
     self.error_id   = 0
     self.error_info = []
@@ -30,12 +34,12 @@ class Data:
     self.name = ''
     self.rank = 0
     self.avtr = ''
-    
+
     self.members = []
 
     self.rice_total = 0
     self.streak     = 0
-		
+
     self.question_id  = ''
     self.question_txt = ''
 
@@ -96,6 +100,10 @@ class Freerice:
   # ============ END URLS ============
 
   def __init__(self, user_id, timeout=DEFAULT_TIMEOUT):
+    '''
+    The main hack class to use
+    '''
+    
     self.user       = user_id # user ID
     self.game       = ''      # game ID
     self.n_games    = 0       # number of games created
@@ -140,7 +148,7 @@ class Freerice:
 
     try:
       data = req.json()
-    except:
+    except json.JSONDecodeError:
       ret.error = True
       ret.error_id = 1
       ret.error_info = 'JSON decode error.'
@@ -164,7 +172,7 @@ class Freerice:
     ret.question_txt = data['data']['attributes']['question']['text']
     try:
       ret.rice_total = data['data']['attributes']['userattributes']['rice']
-    except KeyError: 
+    except KeyError:
       ret.rice_total = data['data']['attributes']['user_rice_total']
     
     self.game = ret.game
