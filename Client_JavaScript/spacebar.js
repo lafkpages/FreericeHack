@@ -16,7 +16,7 @@
 
 window.freeRiceHackFunc = function(e)
 { 
-  if (e.which != 32)
+  if (e.which !== 32)
   {
     return;
   }
