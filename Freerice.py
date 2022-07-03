@@ -177,7 +177,7 @@ class Freerice:
   
   def submitAnswer(self, qId, A):
     data = {
-      'answer': 'a' + A,
+      'answer': 'a' + str(A),
       'question': qId,
       'user': self.user
     }

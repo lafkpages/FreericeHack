@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Clear the terminal
 clear
 
@@ -49,7 +51,7 @@ export FREERICE_INTERVAL=
 main & # 2>&1 | tee .replit.log
 
 # Save hack PID
-MAIN_PID=$!
+#MAIN_PID=$!
 
 # After 8 minutes, send SIGINT
 # so it gets trapped by catch
