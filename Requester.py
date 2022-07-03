@@ -3,7 +3,7 @@ from Freerice import Freerice, ConnectTimeout
 try:
   from Freerice import FetchDescriptorError
 except:
-  FetchDescriptorError = BaseException
+  FetchDescriptorError = Exception
 
 # Base 64
 import base64
