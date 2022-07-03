@@ -301,11 +301,10 @@ def MainHack(log=False, i=0):
             FSUV()
       
       try:
-        ans = str(eval(last.question_txt.replace('x', '*')))
+        spl = last.question_txt.split('x');
+        ans = int(spl[0]) * int(spl[1])
         
         last = freerice.submitAnswer(last.question_id, ans)
-      except SyntaxError: # Syntax error in eval()
-        pass
       except ConnectTimeout as e:
         if 'torpy' in e.args:
           # TorPy error
