@@ -226,14 +226,14 @@ def FSUV():
   
   try:
     ips = [get_local_ip(), get_external_ip(), get_network_ip()]
-  except:
-    pass
-  else:
+    
     logging.critical('\rYour current IPs:')
     
     for ip in ips:
       sleep(0.1)
       logging.critical('\r  - ' + ip)
+  except:
+    logging.critical('\rYour current IPs could not be fetched')
     
   quit(fsuv)
 
