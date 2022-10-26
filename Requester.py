@@ -35,7 +35,7 @@ import os
 # ============= CONFIG =============
 
 # User
-USER    = ('FREERICE_USER', '5b5e8465-f125-4829-b105-ec8cb14995a6')
+USER    = ('FREERICE_USER', '4f7563c9-da35-423d-b886-a1e18d5ebabe')
 user    = os.environ.get(*USER)                    # user ID (can be found in LocalStorage > user > uuid)
 monitor = False
 mntr_gp = False
